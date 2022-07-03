@@ -1,5 +1,4 @@
 import { useMutation, useQuery } from '@apollo/client';
-import { Answer } from '@prisma/client';
 import { gql } from 'apollo-server-micro';
 
 const ChallengeQuery = gql`
@@ -29,7 +28,16 @@ export const useChallenge = (id: number) => {
     loading,
     error,
   } = useQuery<{
-    challenge: { id: number; title: string; answers: Answer[] };
+    challenge: {
+      answers: {
+        challengeId: number;
+        content: string;
+        id: number;
+        likeCount?: number;
+      }[];
+      id: number;
+      title: string;
+    };
   }>(ChallengeQuery, { variables: { challengeId: id } });
 
   const [sendAnswer] = useMutation(createAnswerQuery, {

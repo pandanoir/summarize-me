@@ -1,5 +1,4 @@
 import { useQuery } from '@apollo/client';
-import { Answer } from '@prisma/client';
 import { gql } from 'apollo-server-micro';
 
 const AllChallengesQuery = gql`
@@ -20,7 +19,13 @@ export const useAllChallenges = () => {
     loading,
     error,
   } = useQuery<{
-    challenges: { id: string; title: string; answers: Answer[] }[];
+    challenges: {
+      id: string;
+      title: string;
+      answers: {
+        content: string;
+      }[];
+    }[];
   }>(AllChallengesQuery);
   return { challenges, loading, error };
 };
