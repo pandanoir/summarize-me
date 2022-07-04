@@ -1,12 +1,14 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { gql } from 'apollo-server-micro';
+import { NexusGenFieldTypes, NexusGenArgTypes } from 'nexus-typegen';
 
 const ChallengeQuery = gql`
-  query Challenge($challengeId: Int!) {
-    challenge(id: $challengeId) {
+  query Challenge($id: Int!) {
+    challenge(id: $id) {
       id
       title
       answers {
+        id
         content
         likeCount
       }
@@ -27,18 +29,17 @@ export const useChallenge = (id: number) => {
     data: challenge,
     loading,
     error,
-  } = useQuery<{
-    challenge: {
-      answers: {
-        challengeId: number;
-        content: string;
-        id: number;
-        likeCount?: number;
-      }[];
-      id: number;
-      title: string;
-    };
-  }>(ChallengeQuery, { variables: { challengeId: id } });
+  } = useQuery<
+    {
+      challenge: NexusGenFieldTypes['Query']['challenge'] & {
+        answers: Pick<
+          NexusGenFieldTypes['Answer'],
+          'id' | 'content' | 'likeCount'
+        >[];
+      };
+    },
+    NexusGenArgTypes['Query']['challenge']
+  >(ChallengeQuery, { variables: { id } });
 
   const [sendAnswer] = useMutation(createAnswerQuery, {
     refetchQueries: [ChallengeQuery],

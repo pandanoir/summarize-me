@@ -6,12 +6,11 @@ type Answer {
   challengeId: Int!
   content: String!
   id: Int!
-  likeCount: Int
-  likes: [Like]
+  likeCount: Int!
 }
 
 type Challenge {
-  answers: [Answer]
+  answers: [Answer!]!
   id: Int!
   title: String!
 }
@@ -27,7 +26,7 @@ type Mutation {
 }
 
 type Query {
-  answers(challengeId: Int!): [Answer]
+  answers(challengeId: Int!): [Answer]!
   challenge(id: Int!): Challenge
   challenges: [Challenge]
   likes(answerId: Int!): [Like]

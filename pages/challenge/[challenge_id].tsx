@@ -22,6 +22,7 @@ const Challenge = () => {
   const { challenge, sendAnswer, loading, error } = useChallenge(
     Number(challengeId)
   );
+
   const [showsAnswers, setShowsAnswers] = useState(false);
   const [value, setValue] = useState('');
 
@@ -54,11 +55,15 @@ const Challenge = () => {
         {showsAnswers ? (
           challenge.answers.length > 0 ? (
             <UnorderedList>
-              {challenge.answers.map((x) => (
-                <ListItem key={x.id}>
-                  {x.content}
-                  <Button colorScheme="pink" variant="outline">
-                    <Icon as={AiOutlineHeart} />
+              {challenge.answers.map((answer) => (
+                <ListItem key={answer.id}>
+                  {answer.content}
+                  <Button
+                    colorScheme="pink"
+                    variant="outline"
+                    leftIcon={<Icon as={AiOutlineHeart} />}
+                  >
+                    {answer.likeCount || ''}
                   </Button>
                 </ListItem>
               ))}

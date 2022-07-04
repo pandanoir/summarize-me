@@ -13,8 +13,8 @@ export const Challenge = objectType({
   definition(t) {
     t.nonNull.int('id');
     t.nonNull.string('title');
-    t.list.field('answers', {
-      type: 'Answer',
+    t.nonNull.list.field('answers', {
+      type: nonNull('Answer'),
       resolve(parent, _args, ctx) {
         return ctx.prisma.challenge
           .findUnique({

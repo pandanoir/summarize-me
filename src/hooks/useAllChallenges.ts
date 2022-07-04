@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/client';
 import { gql } from 'apollo-server-micro';
+import { NexusGenFieldTypes } from 'nexus-typegen';
 
 const AllChallengesQuery = gql`
   query {
@@ -18,14 +19,8 @@ export const useAllChallenges = () => {
     data: challenges,
     loading,
     error,
-  } = useQuery<{
-    challenges: {
-      id: string;
-      title: string;
-      answers: {
-        content: string;
-      }[];
-    }[];
-  }>(AllChallengesQuery);
+  } = useQuery<{ challenges: NexusGenFieldTypes['Challenge'][] }>(
+    AllChallengesQuery
+  );
   return { challenges, loading, error };
 };

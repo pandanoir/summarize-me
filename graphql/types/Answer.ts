@@ -14,17 +14,7 @@ export const Answer = objectType({
     t.nonNull.int('id');
     t.nonNull.string('content');
     t.nonNull.int('challengeId');
-    t.list.field('likes', {
-      type: 'Like',
-      resolve(parent, _args, ctx) {
-        return ctx.prisma.answer
-          .findUnique({
-            where: { id: parent.id },
-          })
-          .likes();
-      },
-    });
-    t.field('likeCount', {
+    t.nonNull.field('likeCount', {
       type: 'Int',
       async resolve(parent, _args, ctx) {
         return (
@@ -39,7 +29,7 @@ export const Answer = objectType({
 });
 
 export const AnswersQuery = queryField('answers', {
-  type: list('Answer'),
+  type: nonNull(list('Answer')),
   args: { challengeId: nonNull(intArg()) },
   resolve(_parent, { challengeId }, ctx) {
     return ctx.prisma.answer.findMany({
