@@ -7,6 +7,10 @@ const AllChallengesQuery = gql`
     challenges {
       id
       title
+      labels {
+        id
+        name
+      }
       answers {
         content
       }

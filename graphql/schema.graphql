@@ -13,7 +13,14 @@ type Answer {
 type Challenge {
   answers: [Answer!]!
   id: Int!
+  labels: [Label!]!
   title: String!
+}
+
+type Label {
+  challengeId: Int!
+  id: Int!
+  name: String!
 }
 
 type Like {
@@ -32,5 +39,6 @@ type Query {
   answers(challengeId: Int!): [Answer]!
   challenge(id: Int!): Challenge
   challenges: [Challenge]
+  labels(challengeId: Int!): [Label!]!
   likes(answerId: Int!): [Like]
 }

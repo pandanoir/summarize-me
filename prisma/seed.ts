@@ -35,6 +35,25 @@ const main = async () => {
       },
     ],
   });
+  const 浦島太郎 = await prisma.challenge.findFirst({
+    where: {
+      title: '浦島太郎',
+    },
+  });
+
+  if (浦島太郎)
+    await prisma.label.createMany({
+      data: [
+        {
+          challengeId: 浦島太郎.id,
+          name: 'チュートリアル',
+        },
+        {
+          challengeId: 浦島太郎.id,
+          name: '物語',
+        },
+      ],
+    });
 };
 
 main()

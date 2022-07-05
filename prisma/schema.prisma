@@ -16,6 +16,7 @@ model Challenge {
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
   answers   Answer[]
+  labels    Label[]
 }
 
 model Answer {
@@ -36,4 +37,11 @@ model Like {
   Answer   Answer @relation(fields: [answerId], references: [id])
 
   @@unique([userId, answerId])
+}
+
+model Label {
+  id          Int       @id @default(autoincrement())
+  name        String
+  Challenge   Challenge @relation(fields: [challengeId], references: [id])
+  challengeId Int
 }

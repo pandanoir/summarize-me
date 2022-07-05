@@ -3,9 +3,10 @@ import { join } from 'path';
 import * as Challenge from './types/Challenge';
 import * as Answer from './types/Answer';
 import * as Like from './types/Like';
+import * as Label from './types/Label';
 
 export const schema = makeSchema({
-  types: { ...Challenge, ...Answer, ...Like },
+  types: { ...Challenge, ...Answer, ...Like, ...Label },
   outputs: {
     typegen: join(
       process.cwd(),
