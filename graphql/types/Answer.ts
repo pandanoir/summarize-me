@@ -16,13 +16,10 @@ export const Answer = objectType({
     t.nonNull.int('challengeId');
     t.nonNull.field('likeCount', {
       type: 'Int',
-      async resolve(parent, _args, ctx) {
-        return (
-          await ctx.prisma.like.aggregate({
-            _count: true,
-            where: { answerId: parent.id },
-          })
-        )._count;
+      resolve(parent, _args, ctx) {
+        return ctx.prisma.like.count({
+          where: { answerId: parent.id },
+        });
       },
     });
     t.nonNull.field('isLiked', {
