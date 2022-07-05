@@ -9,17 +9,20 @@ import {
   UnorderedList,
   Text,
   Icon,
+  Flex,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { useChallenge } from '../../src/hooks/useChallenge';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
-import { withPageAuthRequired } from '@auth0/nextjs-auth0';
+import { useUser } from '@auth0/nextjs-auth0';
 
 const Challenge = () => {
+  const { user } = useUser();
+  const isSignIn = typeof user !== 'undefined';
   const router = useRouter();
   const { challenge_id: challengeId } = router.query;
-  const { challenge, sendAnswer, likeAnswer, unlikeAnswer, loading, error } =
+  const { challenge, sendAnswer, likeAnswer, unlikeAnswer, loading } =
     useChallenge(Number(challengeId));
 
   const [showsAnswers, setShowsAnswers] = useState(false);
@@ -57,24 +60,35 @@ const Challenge = () => {
               {challenge.answers.map((answer) => (
                 <ListItem key={answer.id}>
                   {answer.content}
-                  <Button
-                    colorScheme="pink"
-                    variant="outline"
-                    leftIcon={
-                      <Icon
-                        as={answer.isLiked ? AiFillHeart : AiOutlineHeart}
-                      />
-                    }
-                    onClick={() => {
-                      if (answer.isLiked) {
-                        unlikeAnswer({ variables: { answerId: answer.id } });
-                        return;
-                      }
-                      likeAnswer({ variables: { answerId: answer.id } });
-                    }}
-                  >
-                    {answer.likeCount || ''}
-                  </Button>
+                  {isSignIn ? (
+                    <Box>
+                      <Button
+                        colorScheme="pink"
+                        variant="outline"
+                        onClick={() => {
+                          if (answer.isLiked) {
+                            unlikeAnswer({
+                              variables: { answerId: answer.id },
+                            });
+                            return;
+                          }
+                          likeAnswer({ variables: { answerId: answer.id } });
+                        }}
+                      >
+                        <Flex align="center">
+                          <Icon
+                            as={answer.isLiked ? AiFillHeart : AiOutlineHeart}
+                          />
+                          {answer.likeCount || ''}
+                        </Flex>
+                      </Button>
+                    </Box>
+                  ) : (
+                    <Flex color="pink.600" fontWeight="semibold" align="center">
+                      <Icon as={AiOutlineHeart} />
+                      {answer.likeCount || ''}
+                    </Flex>
+                  )}
                 </ListItem>
               ))}
             </UnorderedList>
@@ -97,4 +111,3 @@ const Challenge = () => {
   );
 };
 export default Challenge;
-export const getServerSideProps = withPageAuthRequired();
