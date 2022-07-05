@@ -11,6 +11,7 @@ import {
   Icon,
   Flex,
   Spinner,
+  Tag,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
@@ -21,7 +22,11 @@ import { useAnswers } from '../../src/hooks/useAnswers';
 import { NextPageContext } from 'next';
 
 type ServerProps = {
-  challenge: { title: string; id: number } | null;
+  challenge: {
+    title: string;
+    id: number;
+    labels: { id: number; name: string }[];
+  } | null;
 };
 const Challenge = ({ challenge }: ServerProps) => {
   const { user } = useUser();
@@ -45,7 +50,14 @@ const Challenge = ({ challenge }: ServerProps) => {
   return (
     <ChakraProvider>
       <Box p={6} as="main">
-        <Heading>{challenge.title}</Heading>
+        <HStack>
+          <Heading>{challenge.title}</Heading>
+          {challenge.labels.map(({ name, id }) => (
+            <Tag variant="outline" key={id}>
+              {name}
+            </Tag>
+          ))}
+        </HStack>
         <HStack>
           <Input
             placeholder="要約"
@@ -141,6 +153,10 @@ query Challenge($id: Int!) {
   challenge(id: $id) {
     id
     title
+    labels {
+      id
+      name
+    }
   }
 }`,
       variables: { id: Number(challengeId) },
