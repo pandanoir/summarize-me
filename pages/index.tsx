@@ -4,6 +4,7 @@ import {
   ChakraProvider,
   Heading,
   HStack,
+  SimpleGrid,
   Tag,
   VStack,
 } from '@chakra-ui/react';
@@ -26,7 +27,7 @@ const Home: NextPage = () => {
       </Head>
       <Box p={6} as="main">
         <Heading>summarize me</Heading>
-        <VStack gap={4} py={12} align="left">
+        <SimpleGrid gap={6} columns={{ sm: 2, lg: 3, '2xl': 4 }} py={12}>
           {challenges?.challenges.map(({ id, title, labels }) => (
             <VStack
               key={id}
@@ -50,7 +51,7 @@ const Home: NextPage = () => {
               </HStack>
             </VStack>
           ))}
-        </VStack>
+        </SimpleGrid>
 
         <Button as="a" href="/tutorial">
           チュートリアルを受ける
