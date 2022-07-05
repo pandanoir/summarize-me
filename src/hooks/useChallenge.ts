@@ -90,3 +90,17 @@ export const useChallenge = (id: number) => {
     error,
   };
 };
+export const useSendAnswer = () => {
+  const [sendAnswer] = useMutation<
+    {
+      createAnswer: Pick<
+        NexusGenFieldTypes['Mutation']['createAnswer'],
+        'id' | 'content'
+      >;
+    },
+    NexusGenArgTypes['Mutation']['createAnswer']
+  >(createAnswerQuery, {
+    refetchQueries: [ChallengeQuery],
+  });
+  return sendAnswer;
+};
