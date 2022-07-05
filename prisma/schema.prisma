@@ -34,4 +34,6 @@ model Like {
   userId   String
   answerId Int
   Answer   Answer @relation(fields: [answerId], references: [id])
+
+  @@unique([userId, answerId])
 }

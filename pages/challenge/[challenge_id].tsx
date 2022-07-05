@@ -13,15 +13,14 @@ import {
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { useChallenge } from '../../src/hooks/useChallenge';
-import { AiOutlineHeart } from 'react-icons/ai';
+import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 
 const Challenge = () => {
   const router = useRouter();
   const { challenge_id: challengeId } = router.query;
-  const { challenge, sendAnswer, loading, error } = useChallenge(
-    Number(challengeId)
-  );
+  const { challenge, sendAnswer, likeAnswer, unlikeAnswer, loading, error } =
+    useChallenge(Number(challengeId));
 
   const [showsAnswers, setShowsAnswers] = useState(false);
   const [value, setValue] = useState('');
@@ -61,7 +60,18 @@ const Challenge = () => {
                   <Button
                     colorScheme="pink"
                     variant="outline"
-                    leftIcon={<Icon as={AiOutlineHeart} />}
+                    leftIcon={
+                      <Icon
+                        as={answer.isLiked ? AiFillHeart : AiOutlineHeart}
+                      />
+                    }
+                    onClick={() => {
+                      if (answer.isLiked) {
+                        unlikeAnswer({ variables: { answerId: answer.id } });
+                        return;
+                      }
+                      likeAnswer({ variables: { answerId: answer.id } });
+                    }}
                   >
                     {answer.likeCount || ''}
                   </Button>

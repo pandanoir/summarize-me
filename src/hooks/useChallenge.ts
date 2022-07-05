@@ -11,6 +11,7 @@ const ChallengeQuery = gql`
         id
         content
         likeCount
+        isLiked
       }
     }
   }
@@ -20,6 +21,20 @@ const createAnswerQuery = gql`
     createAnswer(content: $content, challengeId: $challengeId) {
       id
       content
+    }
+  }
+`;
+const createLikeQuery = gql`
+  mutation CreateLike($answerId: Int!) {
+    createLike(answerId: $answerId) {
+      __typename
+    }
+  }
+`;
+const deleteLikeQuery = gql`
+  mutation DeleteLike($answerId: Int!) {
+    deleteLike(answerId: $answerId) {
+      __typename
     }
   }
 `;
@@ -34,16 +49,44 @@ export const useChallenge = (id: number) => {
       challenge: NexusGenFieldTypes['Query']['challenge'] & {
         answers: Pick<
           NexusGenFieldTypes['Answer'],
-          'id' | 'content' | 'likeCount'
+          'id' | 'content' | 'likeCount' | 'isLiked'
         >[];
       };
     },
     NexusGenArgTypes['Query']['challenge']
   >(ChallengeQuery, { variables: { id } });
 
-  const [sendAnswer] = useMutation(createAnswerQuery, {
+  const [sendAnswer] = useMutation<
+    {
+      createAnswer: Pick<
+        NexusGenFieldTypes['Mutation']['createAnswer'],
+        'id' | 'content'
+      >;
+    },
+    NexusGenArgTypes['Mutation']['createAnswer']
+  >(createAnswerQuery, {
     refetchQueries: [ChallengeQuery],
   });
 
-  return { challenge: challenge?.challenge, sendAnswer, loading, error };
+  const [likeAnswer] = useMutation<
+    { createLike: Record<string, never> },
+    NexusGenArgTypes['Mutation']['createLike']
+  >(createLikeQuery, {
+    refetchQueries: [ChallengeQuery],
+  });
+  const [unlikeAnswer] = useMutation<
+    { deleteLike: Record<string, never> },
+    NexusGenArgTypes['Mutation']['deleteLike']
+  >(deleteLikeQuery, {
+    refetchQueries: [ChallengeQuery],
+  });
+
+  return {
+    challenge: challenge?.challenge,
+    sendAnswer,
+    likeAnswer,
+    unlikeAnswer,
+    loading,
+    error,
+  };
 };

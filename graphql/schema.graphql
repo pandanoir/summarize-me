@@ -6,6 +6,7 @@ type Answer {
   challengeId: Int!
   content: String!
   id: Int!
+  isLiked: Boolean!
   likeCount: Int!
 }
 
@@ -23,6 +24,8 @@ type Like {
 type Mutation {
   createAnswer(challengeId: Int!, content: String!): Answer!
   createChallenge(title: String!): Challenge!
+  createLike(answerId: Int!): Like!
+  deleteLike(answerId: Int!): Like!
 }
 
 type Query {

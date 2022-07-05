@@ -25,6 +25,17 @@ export const Answer = objectType({
         )._count;
       },
     });
+    t.nonNull.field('isLiked', {
+      type: 'Boolean',
+      async resolve(parent, _args, { prisma, user }) {
+        if (!user) return false;
+        return (
+          (await prisma.like.count({
+            where: { answerId: parent.id, userId: user.user.sub },
+          })) === 1
+        );
+      },
+    });
   },
 });
 
