@@ -40,8 +40,7 @@ model Like {
 }
 
 model Label {
-  id          Int       @id @default(autoincrement())
-  name        String
-  Challenge   Challenge @relation(fields: [challengeId], references: [id])
-  challengeId Int
+  id         Int         @id @default(autoincrement())
+  name       String      @unique
+  challenges Challenge[]
 }

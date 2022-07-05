@@ -18,7 +18,6 @@ type Challenge {
 }
 
 type Label {
-  challengeId: Int!
   id: Int!
   name: String!
 }

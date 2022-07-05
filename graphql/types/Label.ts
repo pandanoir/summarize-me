@@ -4,7 +4,6 @@ export const Label = objectType({
   name: 'Label',
   definition(t) {
     t.nonNull.int('id');
-    t.nonNull.int('challengeId');
     t.nonNull.string('name');
   },
 });
@@ -15,6 +14,8 @@ export const LabelQuery = queryField('labels', {
     challengeId: nonNull(intArg()),
   },
   resolve(_parent, { challengeId }, ctx) {
-    return ctx.prisma.label.findMany({ where: { challengeId } });
+    return ctx.prisma.challenge
+      .findUnique({ where: { id: challengeId } })
+      .labels();
   },
 });
