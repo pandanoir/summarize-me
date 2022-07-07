@@ -18,6 +18,7 @@ type Challenge {
 }
 
 type Label {
+  challenges: [Challenge!]!
   id: Int!
   name: String!
 }
@@ -38,6 +39,7 @@ type Query {
   answers(challengeId: Int!): [Answer]!
   challenge(id: Int!): Challenge
   challenges: [Challenge]
+  label(name: String!): Label
   labels(challengeId: Int!): [Label!]!
   likes(answerId: Int!): [Like]
 }
