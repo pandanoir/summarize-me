@@ -4,6 +4,7 @@ import {
   ChakraProvider,
   Heading,
   HStack,
+  Link,
   SimpleGrid,
   Tag,
   VStack,
@@ -11,9 +12,11 @@ import {
 import { NextPage } from 'next';
 import Head from 'next/head';
 import { useAllChallenges } from '../src/hooks/useAllChallenges';
+import { useIsSignIn } from '../src/hooks/useIsSignIn';
 
 const Home: NextPage = () => {
   const { challenges, loading, error } = useAllChallenges();
+  const isSignIn = useIsSignIn();
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -26,14 +29,26 @@ const Home: NextPage = () => {
         <title>summarize me</title>
       </Head>
       <Box p={6} as="main">
-        <Heading>summarize me</Heading>
+        <HStack justify="space-between">
+          <Heading>summarize me</Heading>
+          {isSignIn ? (
+            <Button as="a" href="/api/auth/logout">
+              Sign out
+            </Button>
+          ) : (
+            <Button as="a" href="/api/auth/login">
+              Sign in/Sign up
+            </Button>
+          )}
+        </HStack>
+
         <SimpleGrid gap={6} columns={{ sm: 2, lg: 3, '2xl': 4 }} py={12}>
           {challenges?.challenges.map(({ id, title, labels }) => (
             <VStack
               key={id}
-              borderWidth={1}
               borderRadius="lg"
               p={3}
+              boxShadow="md"
               align="left"
             >
               <Box>
@@ -44,9 +59,11 @@ const Home: NextPage = () => {
               </Box>
               <HStack>
                 {labels.map(({ id, name }) => (
-                  <Tag variant="outline" key={id} width="max">
-                    {name}
-                  </Tag>
+                  <Link key={id} href={`/label/${name}`}>
+                    <Tag variant="outline" width="max">
+                      {name}
+                    </Tag>
+                  </Link>
                 ))}
               </HStack>
             </VStack>

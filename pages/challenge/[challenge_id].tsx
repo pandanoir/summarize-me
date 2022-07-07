@@ -17,9 +17,9 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { useSendAnswer } from '../../src/hooks/useChallenge';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
-import { useUser } from '@auth0/nextjs-auth0';
-import { useAnswers } from '../../src/hooks/useAnswers';
 import { NextPageContext } from 'next';
+import { useAnswers } from '../../src/hooks/useAnswers';
+import { useIsSignIn } from '../../src/hooks/useIsSignIn';
 
 type ServerProps = {
   challenge: {
@@ -29,9 +29,8 @@ type ServerProps = {
   } | null;
 };
 const Challenge = ({ challenge }: ServerProps) => {
-  const { user } = useUser();
-  const isSignIn = typeof user !== 'undefined';
   const router = useRouter();
+  const isSignIn = useIsSignIn();
   const { challenge_id: challengeId } = router.query;
   const sendAnswer = useSendAnswer();
   const {
