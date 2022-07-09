@@ -5,6 +5,7 @@ import {
   nonNull,
   intArg,
   stringArg,
+  extendType,
 } from 'nexus';
 
 export const Label = objectType({
@@ -44,3 +45,23 @@ export const LabelQuery = queryField('label', {
     return ctx.prisma.label.findUnique({ where: { name } });
   },
 });
+
+export const CreateLabelMutation = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.nonNull.field('createLabel', {
+      type: 'Label',
+      args: { name: nonNull(stringArg()), challengeId: nonNull(intArg()) },
+      async resolve(_parent, { name, challengeId }, ctx) {
+        await ctx.prisma.challenge.update({
+          where: { id: challengeId },
+          data: {
+            labels: { connectOrCreate: { where: { name }, create: { name } } },
+          },
+        });
+        return (await ctx.prisma.label.findUnique({ where: { name } }))!;
+      },
+    });
+  },
+});
+1;
