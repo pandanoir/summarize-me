@@ -12,15 +12,28 @@ import {
   Flex,
   Spinner,
   Tag,
+  IconButton,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { useSendAnswer } from '../../src/hooks/useChallenge';
+import { ChallengeQuery, useSendAnswer } from '../../src/hooks/useChallenge';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
+import { BsPlus } from 'react-icons/bs';
+import { FaTimes } from 'react-icons/fa';
 import { NextPageContext } from 'next';
 import { useAnswers } from '../../src/hooks/useAnswers';
 import { useIsSignIn } from '../../src/hooks/useIsSignIn';
+import { useMutation } from '@apollo/client';
+import { gql } from 'apollo-server-micro';
+import { NexusGenArgTypes, NexusGenFieldTypes } from 'nexus-typegen';
 
+const createLabelMutation = gql`
+  mutation CreateLabel($name: String!, $challengeId: Int!) {
+    createLabel(name: $name, challengeId: $challengeId) {
+      name
+    }
+  }
+`;
 type ServerProps = {
   challenge: {
     title: string;
@@ -30,8 +43,8 @@ type ServerProps = {
 };
 const Challenge = ({ challenge }: ServerProps) => {
   const router = useRouter();
+  const challengeId = Number(router.query.challenge_id);
   const isSignIn = useIsSignIn();
-  const { challenge_id: challengeId } = router.query;
   const sendAnswer = useSendAnswer();
   const {
     answers,
@@ -43,6 +56,12 @@ const Challenge = ({ challenge }: ServerProps) => {
   const [showsAnswers, setShowsAnswers] = useState(false);
   const [value, setValue] = useState('');
 
+  const [addLabelMode, setAddLabelMode] = useState(false);
+  const [newLabelValue, setNewLabelValue] = useState('');
+  const [createLabel] = useMutation<
+    { createLabel: NexusGenFieldTypes['Mutation']['createLabel'] },
+    NexusGenArgTypes['Mutation']['createLabel']
+  >(createLabelMutation);
   if (!challenge) {
     return <p>not found</p>;
   }
@@ -56,6 +75,50 @@ const Challenge = ({ challenge }: ServerProps) => {
               {name}
             </Tag>
           ))}
+          {addLabelMode ? (
+            <HStack
+              spacing="0"
+              as="form"
+              onSubmit={(e) => {
+                e.preventDefault();
+                createLabel({
+                  variables: { name: newLabelValue, challengeId },
+                  refetchQueries: [ChallengeQuery],
+                  onCompleted: () => {
+                    setAddLabelMode(false);
+                  },
+                });
+              }}
+            >
+              <IconButton
+                size="xs"
+                variant="unstyled"
+                aria-label="remove"
+                icon={<Icon as={FaTimes} />}
+                onClick={() => setAddLabelMode(false)}
+              />
+              <Input
+                required
+                w="28"
+                size="sm"
+                rounded="md"
+                placeholder="new label"
+                value={newLabelValue}
+                onChange={({ target: { value } }) => setNewLabelValue(value)}
+              />
+            </HStack>
+          ) : (
+            <IconButton
+              size="sm"
+              variant="outline"
+              aria-label="add label"
+              icon={<Icon as={BsPlus} />}
+              onClick={() => {
+                setAddLabelMode(true);
+                setNewLabelValue('');
+              }}
+            />
+          )}
         </HStack>
         <HStack>
           <Input
