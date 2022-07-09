@@ -2,7 +2,7 @@ import { useQuery } from '@apollo/client';
 import { gql } from 'apollo-server-micro';
 import { NexusGenFieldTypes } from 'nexus-typegen';
 
-const AllChallengesQuery = gql`
+export const AllChallengesQuery = gql`
   query {
     challenges {
       id

@@ -11,8 +11,12 @@ import {
 } from '@chakra-ui/react';
 import { NextPage } from 'next';
 import Head from 'next/head';
-import { useAllChallenges } from '../src/hooks/useAllChallenges';
+import {
+  AllChallengesQuery,
+  useAllChallenges,
+} from '../src/hooks/useAllChallenges';
 import { useIsSignIn } from '../src/hooks/useIsSignIn';
+import { fetchInitialData } from '../src/utils/fetchInitialData';
 
 const Home: NextPage = () => {
   const { challenges, loading, error } = useAllChallenges();
@@ -77,5 +81,13 @@ const Home: NextPage = () => {
     </ChakraProvider>
   );
 };
+
+export const getServerSideProps = async () => ({
+  props: {
+    ...(await fetchInitialData({
+      query: AllChallengesQuery,
+    })),
+  },
+});
 
 export default Home;

@@ -27,15 +27,10 @@ import { FaTimes } from 'react-icons/fa';
 import { NextPageContext } from 'next';
 import { useAnswers } from '../../src/hooks/useAnswers';
 import { useIsSignIn } from '../../src/hooks/useIsSignIn';
-import {
-  ApolloClient,
-  HttpLink,
-  InMemoryCache,
-  NormalizedCacheObject,
-  useMutation,
-} from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { gql } from 'apollo-server-micro';
 import { NexusGenArgTypes, NexusGenFieldTypes } from 'nexus-typegen';
+import { fetchInitialData } from '../../src/utils/fetchInitialData';
 
 const createLabelMutation = gql`
   mutation CreateLabel($name: String!, $challengeId: Int!) {
@@ -207,25 +202,13 @@ const Challenge = () => {
 };
 export default Challenge;
 
-let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
-export const getServerSideProps = async (context: NextPageContext) => {
-  const challengeId = Number(context.query.challenge_id);
-  if (!apolloClient)
-    apolloClient = new ApolloClient({
-      ssrMode: true,
-      link: new HttpLink({
-        uri: 'http://localhost:3000/api/graphql',
-        credentials: 'same-origin',
-      }),
-      cache: new InMemoryCache(),
-    });
-
-  await apolloClient.query({
-    query: ChallengeQuery,
-    variables: {
-      id: challengeId,
-    },
-  });
-
-  return { props: { initialData: apolloClient.cache.extract() } };
-};
+export const getServerSideProps = async (context: NextPageContext) => ({
+  props: {
+    ...(await fetchInitialData({
+      query: ChallengeQuery,
+      variables: {
+        id: Number(context.query.challenge_id),
+      },
+    })),
+  },
+});
