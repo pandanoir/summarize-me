@@ -16,14 +16,24 @@ import {
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { ChallengeQuery, useSendAnswer } from '../../src/hooks/useChallenge';
+import {
+  ChallengeQuery,
+  useChallenge,
+  useSendAnswer,
+} from '../../src/hooks/useChallenge';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { BsPlus } from 'react-icons/bs';
 import { FaTimes } from 'react-icons/fa';
 import { NextPageContext } from 'next';
 import { useAnswers } from '../../src/hooks/useAnswers';
 import { useIsSignIn } from '../../src/hooks/useIsSignIn';
-import { useMutation } from '@apollo/client';
+import {
+  ApolloClient,
+  HttpLink,
+  InMemoryCache,
+  NormalizedCacheObject,
+  useMutation,
+} from '@apollo/client';
 import { gql } from 'apollo-server-micro';
 import { NexusGenArgTypes, NexusGenFieldTypes } from 'nexus-typegen';
 
@@ -34,24 +44,18 @@ const createLabelMutation = gql`
     }
   }
 `;
-type ServerProps = {
-  challenge: {
-    title: string;
-    id: number;
-    labels: { id: number; name: string }[];
-  } | null;
-};
-const Challenge = ({ challenge }: ServerProps) => {
+const Challenge = () => {
   const router = useRouter();
   const challengeId = Number(router.query.challenge_id);
   const isSignIn = useIsSignIn();
+  const { challenge, loading } = useChallenge(challengeId);
   const sendAnswer = useSendAnswer();
   const {
     answers,
     likeAnswer,
     unlikeAnswer,
     load: loadAnswers,
-  } = useAnswers(Number(challengeId));
+  } = useAnswers(challengeId);
 
   const [showsAnswers, setShowsAnswers] = useState(false);
   const [value, setValue] = useState('');
@@ -62,6 +66,10 @@ const Challenge = ({ challenge }: ServerProps) => {
     { createLabel: NexusGenFieldTypes['Mutation']['createLabel'] },
     NexusGenArgTypes['Mutation']['createLabel']
   >(createLabelMutation);
+
+  if (loading) {
+    return <Spinner />;
+  }
   if (!challenge) {
     return <p>not found</p>;
   }
@@ -199,35 +207,25 @@ const Challenge = ({ challenge }: ServerProps) => {
 };
 export default Challenge;
 
-export const getServerSideProps = async (
-  context: NextPageContext
-): Promise<{ props: ServerProps }> => {
-  const { challenge_id: challengeId } = context.query;
-  const data = await fetch('http://localhost:3000/api/graphql', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
+let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
+export const getServerSideProps = async (context: NextPageContext) => {
+  const challengeId = Number(context.query.challenge_id);
+  if (!apolloClient)
+    apolloClient = new ApolloClient({
+      ssrMode: true,
+      link: new HttpLink({
+        uri: 'http://localhost:3000/api/graphql',
+        credentials: 'same-origin',
+      }),
+      cache: new InMemoryCache(),
+    });
+
+  await apolloClient.query({
+    query: ChallengeQuery,
+    variables: {
+      id: challengeId,
     },
-    body: JSON.stringify({
-      operationName: 'Challenge',
-      query: `
-query Challenge($id: Int!) {
-  challenge(id: $id) {
-    id
-    title
-    labels {
-      id
-      name
-    }
-  }
-}`,
-      variables: { id: Number(challengeId) },
-    }),
   });
 
-  const { data: json, errors } = await data.json();
-  if (errors) {
-    return { props: { challenge: null } };
-  }
-  return { props: { challenge: json.challenge } };
+  return { props: { initialData: apolloClient.cache.extract() } };
 };
