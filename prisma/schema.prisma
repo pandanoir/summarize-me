@@ -13,6 +13,7 @@ datasource db {
 model Challenge {
   id        Int      @id @default(autoincrement())
   title     String   @db.VarChar(100)
+  authorId  String
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
   answers   Answer[]

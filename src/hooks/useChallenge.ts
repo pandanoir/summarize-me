@@ -37,6 +37,14 @@ const deleteLikeMutation = gql`
   }
 `;
 
+const createChallengeMutation = gql`
+  mutation CreateChallenge($title: String!) {
+    createChallenge(title: $title) {
+      id
+      title
+    }
+  }
+`;
 export const useChallenge = (id: number) => {
   const {
     data: challenge,
@@ -86,7 +94,7 @@ export const useChallenge = (id: number) => {
   };
 };
 export const useSendAnswer = () => {
-  const [sendAnswer] = useMutation<
+  const [sendAnswer, { error }] = useMutation<
     {
       createAnswer: Pick<
         NexusGenFieldTypes['Mutation']['createAnswer'],
@@ -97,5 +105,14 @@ export const useSendAnswer = () => {
   >(createAnswerMutation, {
     refetchQueries: [ChallengeQuery],
   });
-  return sendAnswer;
+  return [sendAnswer, error] as const;
+};
+export const useCreateChallenge = () => {
+  const [createChallenge] = useMutation<
+    {
+      createChallenge: NexusGenFieldTypes['Mutation']['createChallenge'];
+    },
+    NexusGenArgTypes['Mutation']['createChallenge']
+  >(createChallengeMutation);
+  return createChallenge;
 };

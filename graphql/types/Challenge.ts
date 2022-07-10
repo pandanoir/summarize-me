@@ -13,6 +13,7 @@ export const Challenge = objectType({
   definition(t) {
     t.nonNull.int('id');
     t.nonNull.string('title');
+    t.nonNull.string('authorId');
     t.nonNull.list.field('labels', {
       type: nonNull('Label'),
       resolve(parent, _args, ctx) {
@@ -63,10 +64,27 @@ export const CreateChallengeMutation = extendType({
   definition(t) {
     t.nonNull.field('createChallenge', {
       type: 'Challenge',
-      args: { title: nonNull(stringArg()) },
-      resolve(_parent, args, ctx) {
-        return ctx.prisma.challenge.create({
-          data: { title: args.title },
+      args: {
+        title: nonNull(stringArg()),
+        labels: list(nonNull(stringArg())),
+      },
+      resolve(_parent, { title, labels }, { user, prisma }) {
+        if (!user)
+          throw new Error(`You need to be logged in to perform an action`);
+
+        return prisma.challenge.create({
+          data: {
+            title,
+            authorId: user.user.sub,
+            labels: labels
+              ? {
+                  connectOrCreate: labels.map((label) => ({
+                    where: { name: label },
+                    create: { name: label },
+                  })),
+                }
+              : undefined,
+          },
         });
       },
     });

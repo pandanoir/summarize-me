@@ -5,6 +5,7 @@ import {
   Heading,
   HStack,
   Link,
+  Text,
   SimpleGrid,
   Tag,
   VStack,
@@ -32,21 +33,21 @@ const Home: NextPage = () => {
       <Head>
         <title>summarize me</title>
       </Head>
-      <Box p={6} as="main">
+      <VStack p={6} as="main" spacing={12} align="left">
         <HStack justify="space-between">
           <Heading>summarize me</Heading>
           {isSignIn ? (
             <Button as="a" href="/api/auth/logout">
-              Sign out
+              Log out
             </Button>
           ) : (
             <Button as="a" href="/api/auth/login">
-              Sign in/Sign up
+              Log in/Sign up
             </Button>
           )}
         </HStack>
 
-        <SimpleGrid gap={6} columns={{ sm: 2, lg: 3, '2xl': 4 }} py={12}>
+        <SimpleGrid gap={6} columns={{ sm: 2, lg: 3, '2xl': 4 }}>
           {challenges?.challenges.map(({ id, title, labels }) => (
             <VStack
               key={id}
@@ -73,11 +74,18 @@ const Home: NextPage = () => {
             </VStack>
           ))}
         </SimpleGrid>
+        {isSignIn ? (
+          <Button as="a" href="/challenge/create" w="max">
+            問題を作る
+          </Button>
+        ) : (
+          <Text>ログインすると問題を作れます</Text>
+        )}
 
-        <Button as="a" href="/tutorial">
+        <Button as="a" href="/tutorial" w="max">
           チュートリアルを受ける
         </Button>
-      </Box>
+      </VStack>
     </ChakraProvider>
   );
 };

@@ -42,9 +42,24 @@ const main = async () => {
       },
     },
   });
+  for (const title of ['千と千尋の神隠し', 'もののけ姫', 'となりのトトロ'])
+    await prisma.challenge.create({
+      data: {
+        title,
+        labels: {
+          connectOrCreate: ['物語', '映画', 'ジブリ'].map((label) => ({
+            where: { name: label },
+            create: { name: label },
+          })),
+        },
+      },
+    });
+
   await prisma.challenge.createMany({
     data: [
       { title: 'サッカー' },
+      { title: '料理' },
+      { title: '柔道' },
       { title: 'Twitter' },
       { title: 'Facebook' },
       { title: 'YouTube' },
