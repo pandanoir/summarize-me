@@ -83,7 +83,7 @@ export const getServerSideProps = async (
   context: NextPageContext
 ): Promise<{ props: ServerProps }> => {
   const { label_name: labelName } = context.query;
-  const data = await fetch('http://localhost:3000/api/graphql', {
+  const data = await fetch(`http://${process.env.HOSTNAME}/api/graphql`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
