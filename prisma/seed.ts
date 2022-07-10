@@ -1,10 +1,12 @@
 import { prisma } from '../lib/prisma';
 
+const authorId = 'auth0|5f0837623e0de80013a2485b';
 const main = async () => {
   for (const title of ['浦島太郎', '桃太郎', 'かぐや姫'])
     await prisma.challenge.create({
       data: {
         title,
+        authorId,
         labels: {
           connectOrCreate: ['チュートリアル', '物語', '昔話'].map((label) => ({
             where: { name: label },
@@ -17,6 +19,7 @@ const main = async () => {
     await prisma.challenge.create({
       data: {
         title,
+        authorId,
         labels: {
           connectOrCreate: ['物語', '漫画'].map((label) => ({
             where: { name: label },
@@ -29,6 +32,7 @@ const main = async () => {
   await prisma.challenge.create({
     data: {
       title: 'じゃんけん',
+      authorId,
       answers: {
         create: {
           content:
@@ -46,6 +50,7 @@ const main = async () => {
     await prisma.challenge.create({
       data: {
         title,
+        authorId,
         labels: {
           connectOrCreate: ['物語', '映画', 'ジブリ'].map((label) => ({
             where: { name: label },
@@ -57,13 +62,13 @@ const main = async () => {
 
   await prisma.challenge.createMany({
     data: [
-      { title: 'サッカー' },
-      { title: '料理' },
-      { title: '柔道' },
-      { title: 'Twitter' },
-      { title: 'Facebook' },
-      { title: 'YouTube' },
-      { title: 'スマートフォン' },
+      { title: 'サッカー', authorId },
+      { title: '料理', authorId },
+      { title: '柔道', authorId },
+      { title: 'Twitter', authorId },
+      { title: 'Facebook', authorId },
+      { title: 'YouTube', authorId },
+      { title: 'スマートフォン', authorId },
     ],
   });
 };
