@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build:nexus-typegen": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' --transpile-only graphql/schema",
+    "build:nexus-typegen": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' --transpile-only graphql/schema && cat node_modules/@types/nexus-typegen/index.d.ts",
     "build": "npm run build:nexus-typegen && next build",
     "start": "next start"
   },
