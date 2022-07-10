@@ -8,7 +8,7 @@ import * as Label from './types/Label';
 export const schema = makeSchema({
   types: { ...Challenge, ...Answer, ...Like, ...Label },
   outputs: {
-    typegen: join(process.cwd(), 'generated', 'index.d.ts'),
+    typegen: join(process.cwd(), 'generated', 'nexus-typegen.d.ts'),
     schema: join(process.cwd(), 'generated', 'schema.graphql'),
   },
   contextType: {

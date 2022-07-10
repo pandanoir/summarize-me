@@ -1,6 +1,9 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { gql } from 'apollo-server-micro';
-import { NexusGenFieldTypes, NexusGenArgTypes } from 'nexus-typegen';
+import {
+  NexusGenFieldTypes,
+  NexusGenArgTypes,
+} from '../../generated/nexus-typegen';
 
 export const ChallengeQuery = gql`
   query Challenge($id: Int!) {

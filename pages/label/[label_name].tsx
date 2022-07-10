@@ -11,7 +11,7 @@ import {
 import { NextPageContext } from 'next';
 import { gql } from 'apollo-server-micro';
 import { useQuery } from '@apollo/client';
-import { NexusGenFieldTypes } from 'nexus-typegen';
+import { NexusGenFieldTypes } from '../../generated/nexus-typegen';
 import { useRouter } from 'next/router';
 
 type ServerProps = {

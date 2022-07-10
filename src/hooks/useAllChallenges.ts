@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client';
 import { gql } from 'apollo-server-micro';
-import { NexusGenFieldTypes } from 'nexus-typegen';
+import { NexusGenFieldTypes } from '../../generated/nexus-typegen';
 
 export const AllChallengesQuery = gql`
   query {

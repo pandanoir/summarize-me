@@ -30,7 +30,10 @@ import { useAnswers } from '../../src/hooks/useAnswers';
 import { useIsSignIn } from '../../src/hooks/useIsSignIn';
 import { useMutation } from '@apollo/client';
 import { gql } from 'apollo-server-micro';
-import { NexusGenArgTypes, NexusGenFieldTypes } from 'nexus-typegen';
+import {
+  NexusGenArgTypes,
+  NexusGenFieldTypes,
+} from '../../generated/nexus-typegen';
 import { fetchInitialData } from '../../src/utils/fetchInitialData';
 
 const createLabelMutation = gql`
