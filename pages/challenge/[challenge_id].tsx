@@ -13,9 +13,10 @@ import {
   Spinner,
   Tag,
   IconButton,
+  useToast,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ChallengeQuery,
   useChallenge,
@@ -44,7 +45,7 @@ const Challenge = () => {
   const challengeId = Number(router.query.challenge_id);
   const isSignIn = useIsSignIn();
   const { challenge, loading } = useChallenge(challengeId);
-  const sendAnswer = useSendAnswer();
+  const [sendAnswer, sendAnswerError] = useSendAnswer();
   const {
     answers,
     likeAnswer,
@@ -61,6 +62,24 @@ const Challenge = () => {
     { createLabel: NexusGenFieldTypes['Mutation']['createLabel'] },
     NexusGenArgTypes['Mutation']['createLabel']
   >(createLabelMutation);
+  const toast = useToast();
+
+  useEffect(() => {
+    if (sendAnswerError?.message === 'Content field is required') {
+      toast({
+        title: '要約を入力してください',
+        status: 'warning',
+        position: 'bottom-right',
+      });
+    }
+    if (sendAnswerError?.message === 'The answer is too long') {
+      toast({
+        title: '要約が長すぎます。280文字以内で解答してください',
+        status: 'warning',
+        position: 'bottom-right',
+      });
+    }
+  }, [sendAnswerError]);
 
   if (loading) {
     return <Spinner />;
@@ -133,7 +152,7 @@ const Challenge = () => {
             onClick={() =>
               sendAnswer({
                 variables: { content: value, challengeId: challenge.id },
-              })
+              }).catch(() => {})
             }
           >
             投稿する
@@ -202,13 +221,19 @@ const Challenge = () => {
 };
 export default Challenge;
 
-export const getServerSideProps = async (context: NextPageContext) => ({
-  props: {
-    ...(await fetchInitialData({
-      query: ChallengeQuery,
-      variables: {
-        id: Number(context.query.challenge_id),
-      },
-    })),
-  },
-});
+export const getServerSideProps = async (context: NextPageContext) => {
+  const challengeId = Number(context.query.challenge_id);
+  if (isNaN(challengeId)) {
+    return { props: { initialData: null } };
+  }
+  return {
+    props: {
+      ...(await fetchInitialData({
+        query: ChallengeQuery,
+        variables: {
+          id: challengeId,
+        },
+      })),
+    },
+  };
+};

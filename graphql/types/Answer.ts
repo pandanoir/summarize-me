@@ -58,6 +58,12 @@ export const CreateAnswerMutation = extendType({
       type: 'Answer',
       args: { content: nonNull(stringArg()), challengeId: nonNull(intArg()) },
       resolve(_parent, { challengeId, content }, ctx) {
+        if (content.length === 0) {
+          throw new Error('Content field is required');
+        }
+        if (content.length > 280) {
+          throw new Error('The answer is too long');
+        }
         return ctx.prisma.answer.create({
           data: { content, challengeId },
         });
