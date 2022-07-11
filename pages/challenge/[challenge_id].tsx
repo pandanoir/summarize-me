@@ -16,6 +16,7 @@ import {
   useToast,
   Stack,
   Link,
+  VStack,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -94,13 +95,13 @@ const Challenge = () => {
   }
   return (
     <ChakraProvider>
-      <Box p={6} as="main">
+      <VStack p={6} as="main" spacing={3} align="left">
         <Stack direction={['column', 'row']}>
           <Heading>{challenge.title}</Heading>
-          <HStack>
+          <Flex wrap="wrap" gap="2" align="center">
             {challenge.labels.map(({ name, id }) => (
               <Link key={id} href={`/label/${name}`}>
-                <Tag variant="outline">
+                <Tag variant="outline" wordBreak="keep-all">
                   <Icon as={AiFillTag} />
                   {name}
                 </Tag>
@@ -150,7 +151,7 @@ const Challenge = () => {
                 }}
               />
             )}
-          </HStack>
+          </Flex>
         </Stack>
         <HStack>
           <Input
@@ -174,6 +175,7 @@ const Challenge = () => {
               setShowsAnswers(true);
               loadAnswers();
             }}
+            w="max"
           >
             ほかの人の回答を見る
           </Button>
@@ -219,13 +221,13 @@ const Challenge = () => {
             ))}
           </UnorderedList>
         )}
-        <Button as="a" href="/tutorial">
+        <Button as="a" href="/tutorial" w="max">
           チュートリアルを受ける
         </Button>
-        <Button as="a" href="/">
+        <Button as="a" href="/" w="max">
           トップに戻る
         </Button>
-      </Box>
+      </VStack>
     </ChakraProvider>
   );
 };
