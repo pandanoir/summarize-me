@@ -18,7 +18,7 @@ export const fetchInitialData = async <
     apolloClient = new ApolloClient({
       ssrMode: true,
       link: new HttpLink({
-        uri: `http://${process.env.HOSTNAME}/api/graphql`,
+        uri: `${process.env.API_ENDPOINT}/api/graphql`,
         credentials: 'same-origin',
       }),
       cache: new InMemoryCache(),
