@@ -7,12 +7,14 @@ import {
   Button,
   SimpleGrid,
   VStack,
+  Icon,
 } from '@chakra-ui/react';
 import { NextPageContext } from 'next';
 import { gql } from 'apollo-server-micro';
 import { useQuery } from '@apollo/client';
 import { NexusGenFieldTypes } from '../../generated/nexus-typegen';
 import { useRouter } from 'next/router';
+import { AiFillTag } from 'react-icons/ai';
 
 type ServerProps = {
   label: {
@@ -52,7 +54,10 @@ const Label = ({ label }: ServerProps) => {
     <ChakraProvider>
       <Box p={6} as="main">
         <HStack>
-          <Heading>{label.name}</Heading>
+          <Heading>
+            <Icon as={AiFillTag} />
+            {label.name}
+          </Heading>
         </HStack>
 
         <SimpleGrid gap={6} columns={{ sm: 2, lg: 3, '2xl': 4 }} py={12}>
