@@ -15,6 +15,7 @@ import {
   IconButton,
   useToast,
   Stack,
+  Link,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -98,10 +99,12 @@ const Challenge = () => {
           <Heading>{challenge.title}</Heading>
           <HStack>
             {challenge.labels.map(({ name, id }) => (
-              <Tag variant="outline" key={id}>
-                <Icon as={AiFillTag} />
-                {name}
-              </Tag>
+              <Link key={id} href={`/label/${name}`}>
+                <Tag variant="outline">
+                  <Icon as={AiFillTag} />
+                  {name}
+                </Tag>
+              </Link>
             ))}
             {addLabelMode ? (
               <HStack
