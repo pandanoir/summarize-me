@@ -37,13 +37,27 @@ export const Challenge = objectType({
   },
 });
 
-export const ChallengesQuery = queryField('challenges', {
-  type: list('Challenge'),
-  resolve(_parent, _args, ctx) {
-    return ctx.prisma.challenge.findMany({
-      include: { answers: true },
-    });
-  },
+export const ChallengesQuery = queryField((t) => {
+  t.nonNull.connectionField('challenges', {
+    type: Challenge,
+    nonNullDefaults: {
+      output: true,
+    },
+    nodes(root, args, ctx, info) {
+      if (args.before && args.last) {
+        return ctx.prisma.challenge.findMany({
+          take: -args.last - 1,
+          cursor: { id: Number(args.before) },
+          include: { answers: true },
+        });
+      }
+      return ctx.prisma.challenge.findMany({
+        take: (args.first || 10) + 1,
+        ...(args.after && { cursor: { id: Number(args.after) } }),
+        include: { answers: true },
+      });
+    },
+  });
 });
 
 export const ChallengeQuery = queryField('challenge', {

@@ -14,7 +14,7 @@
   "dependencies": {
     "@apollo/client": "3.6.5",
     "@auth0/nextjs-auth0": "1.9.1",
-    "@chakra-ui/react": "2.1.2",
+    "@chakra-ui/react": "2.2.3",
     "@emotion/react": "11.9.0",
     "@emotion/styled": "11.8.1",
     "@prisma/client": "3.14.0",

@@ -11,18 +11,23 @@ import {
   VStack,
   Icon,
 } from '@chakra-ui/react';
-import { NextPage } from 'next';
+import { NextPage, NextPageContext } from 'next';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { AiFillTag } from 'react-icons/ai';
+import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 import {
-  AllChallengesQuery,
+  ChallengeChunkQuery,
   useAllChallenges,
 } from '../src/hooks/useAllChallenges';
 import { useIsSignIn } from '../src/hooks/useIsSignIn';
 import { fetchInitialData } from '../src/utils/fetchInitialData';
 
 const Home: NextPage = () => {
-  const { challenges, loading, error } = useAllChallenges();
+  const { query } = useRouter();
+  const after = Array.isArray(query.after) ? query.after[0] : query.after;
+  const before = Array.isArray(query.before) ? query.before[0] : query.before;
+  const { challenges, loading, error } = useAllChallenges({ after, before });
   const isSignIn = useIsSignIn();
   if (loading) {
     return <p>Loading...</p>;
@@ -30,6 +35,7 @@ const Home: NextPage = () => {
   if (error) {
     return <p>Error: {error.message}</p>;
   }
+  console.log(challenges?.challenges.pageInfo);
   return (
     <ChakraProvider>
       <Head>
@@ -50,7 +56,7 @@ const Home: NextPage = () => {
         </HStack>
 
         <SimpleGrid gap={6} columns={{ sm: 2, lg: 3, '2xl': 4 }}>
-          {challenges?.challenges.map(({ id, title, labels }) => (
+          {challenges?.challenges.nodes?.map(({ id, title, labels }) => (
             <VStack
               key={id}
               borderRadius="lg"
@@ -77,6 +83,25 @@ const Home: NextPage = () => {
             </VStack>
           ))}
         </SimpleGrid>
+
+        <HStack>
+          {challenges?.challenges.pageInfo.hasPreviousPage && (
+            <Button
+              as="a"
+              href={`/?before=${challenges?.challenges.pageInfo.startCursor}`}
+            >
+              <Icon as={MdNavigateBefore} /> prev page
+            </Button>
+          )}
+          {challenges?.challenges.pageInfo.hasNextPage && (
+            <Button
+              as="a"
+              href={`/?after=${challenges?.challenges.pageInfo.endCursor}`}
+            >
+              next page <Icon as={MdNavigateNext} />
+            </Button>
+          )}
+        </HStack>
         {isSignIn ? (
           <Button as="a" href="/challenge/create" w="max">
             問題を作る
@@ -93,12 +118,18 @@ const Home: NextPage = () => {
   );
 };
 
-export const getServerSideProps = async () => ({
-  props: {
-    ...(await fetchInitialData({
-      query: AllChallengesQuery,
-    })),
-  },
-});
+export const getServerSideProps = async ({ query }: NextPageContext) => {
+  const after = Array.isArray(query.after) ? query.after[0] : query.after;
+  const before = Array.isArray(query.before) ? query.before[0] : query.before;
+
+  return {
+    props: {
+      ...(await fetchInitialData({
+        query: ChallengeChunkQuery,
+        variables: before ? { before, last: 10 } : { after, first: 10 },
+      })),
+    },
+  };
+};
 
 export default Home;

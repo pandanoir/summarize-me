@@ -1,4 +1,4 @@
-import { makeSchema } from 'nexus';
+import { makeSchema, connectionPlugin } from 'nexus';
 import { join } from 'path';
 import * as Challenge from './types/Challenge';
 import * as Answer from './types/Answer';
@@ -15,4 +15,9 @@ export const schema = makeSchema({
     export: 'Context',
     module: join(process.cwd(), 'graphql', 'context.ts'),
   },
+  plugins: [
+    connectionPlugin({
+      includeNodesField: true,
+    }),
+  ],
 });

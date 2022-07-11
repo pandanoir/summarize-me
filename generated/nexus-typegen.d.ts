@@ -5,8 +5,21 @@
 
 
 import type { Context } from "./../graphql/context"
+import type { core, connectionPluginCore } from "nexus"
 
-
+declare global {
+  interface NexusGenCustomOutputMethods<TypeName extends string> {
+    /**
+     * Adds a Relay-style connection to the type, with numerous options for configuration
+     *
+     * @see https://nexusjs.org/docs/plugins/connection
+     */
+    connectionField<FieldName extends string>(
+      fieldName: FieldName,
+      config: connectionPluginCore.ConnectionFieldConfig<TypeName, FieldName>
+    ): void
+  }
+}
 
 
 declare global {
@@ -38,6 +51,15 @@ export interface NexusGenObjects {
     id: number; // Int!
     title: string; // String!
   }
+  ChallengeConnection: { // root type
+    edges: NexusGenRootTypes['ChallengeEdge'][]; // [ChallengeEdge!]!
+    nodes: NexusGenRootTypes['Challenge'][]; // [Challenge!]!
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  ChallengeEdge: { // root type
+    cursor: string; // String!
+    node: NexusGenRootTypes['Challenge']; // Challenge!
+  }
   Label: { // root type
     id: number; // Int!
     name: string; // String!
@@ -47,6 +69,12 @@ export interface NexusGenObjects {
     userId: string; // String!
   }
   Mutation: {};
+  PageInfo: { // root type
+    endCursor?: string | null; // String
+    hasNextPage: boolean; // Boolean!
+    hasPreviousPage: boolean; // Boolean!
+    startCursor?: string | null; // String
+  }
   Query: {};
 }
 
@@ -75,6 +103,15 @@ export interface NexusGenFieldTypes {
     labels: NexusGenRootTypes['Label'][]; // [Label!]!
     title: string; // String!
   }
+  ChallengeConnection: { // field return type
+    edges: NexusGenRootTypes['ChallengeEdge'][]; // [ChallengeEdge!]!
+    nodes: NexusGenRootTypes['Challenge'][]; // [Challenge!]!
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  ChallengeEdge: { // field return type
+    cursor: string; // String!
+    node: NexusGenRootTypes['Challenge']; // Challenge!
+  }
   Label: { // field return type
     challenges: NexusGenRootTypes['Challenge'][]; // [Challenge!]!
     id: number; // Int!
@@ -91,10 +128,16 @@ export interface NexusGenFieldTypes {
     createLike: NexusGenRootTypes['Like']; // Like!
     deleteLike: NexusGenRootTypes['Like']; // Like!
   }
+  PageInfo: { // field return type
+    endCursor: string | null; // String
+    hasNextPage: boolean; // Boolean!
+    hasPreviousPage: boolean; // Boolean!
+    startCursor: string | null; // String
+  }
   Query: { // field return type
     answers: Array<NexusGenRootTypes['Answer'] | null>; // [Answer]!
     challenge: NexusGenRootTypes['Challenge'] | null; // Challenge
-    challenges: Array<NexusGenRootTypes['Challenge'] | null> | null; // [Challenge]
+    challenges: NexusGenRootTypes['ChallengeConnection']; // ChallengeConnection!
     label: NexusGenRootTypes['Label'] | null; // Label
     labels: NexusGenRootTypes['Label'][]; // [Label!]!
     likes: Array<NexusGenRootTypes['Like'] | null> | null; // [Like]
@@ -116,6 +159,15 @@ export interface NexusGenFieldTypeNames {
     labels: 'Label'
     title: 'String'
   }
+  ChallengeConnection: { // field return type name
+    edges: 'ChallengeEdge'
+    nodes: 'Challenge'
+    pageInfo: 'PageInfo'
+  }
+  ChallengeEdge: { // field return type name
+    cursor: 'String'
+    node: 'Challenge'
+  }
   Label: { // field return type name
     challenges: 'Challenge'
     id: 'Int'
@@ -132,10 +184,16 @@ export interface NexusGenFieldTypeNames {
     createLike: 'Like'
     deleteLike: 'Like'
   }
+  PageInfo: { // field return type name
+    endCursor: 'String'
+    hasNextPage: 'Boolean'
+    hasPreviousPage: 'Boolean'
+    startCursor: 'String'
+  }
   Query: { // field return type name
     answers: 'Answer'
     challenge: 'Challenge'
-    challenges: 'Challenge'
+    challenges: 'ChallengeConnection'
     label: 'Label'
     labels: 'Label'
     likes: 'Like'
@@ -169,6 +227,12 @@ export interface NexusGenArgTypes {
     }
     challenge: { // args
       id: number; // Int!
+    }
+    challenges: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
     }
     label: { // args
       name: string; // String!
@@ -245,6 +309,7 @@ declare global {
   interface NexusGenPluginInputTypeConfig<TypeName extends string> {
   }
   interface NexusGenPluginFieldConfig<TypeName extends string, FieldName extends string> {
+    
   }
   interface NexusGenPluginInputFieldConfig<TypeName extends string, FieldName extends string> {
   }
