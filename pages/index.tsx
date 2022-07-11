@@ -9,9 +9,11 @@ import {
   SimpleGrid,
   Tag,
   VStack,
+  Icon,
 } from '@chakra-ui/react';
 import { NextPage } from 'next';
 import Head from 'next/head';
+import { AiFillTag } from 'react-icons/ai';
 import {
   AllChallengesQuery,
   useAllChallenges,
@@ -66,6 +68,7 @@ const Home: NextPage = () => {
                 {labels.map(({ id, name }) => (
                   <Link key={id} href={`/label/${name}`}>
                     <Tag variant="outline" width="max">
+                      <Icon as={AiFillTag} />
                       {name}
                     </Tag>
                   </Link>
