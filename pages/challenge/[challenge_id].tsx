@@ -14,6 +14,7 @@ import {
   Tag,
   IconButton,
   useToast,
+  Stack,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -22,7 +23,7 @@ import {
   useChallenge,
   useSendAnswer,
 } from '../../src/hooks/useChallenge';
-import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
+import { AiFillHeart, AiFillTag, AiOutlineHeart } from 'react-icons/ai';
 import { BsPlus } from 'react-icons/bs';
 import { FaTimes } from 'react-icons/fa';
 import { NextPageContext } from 'next';
@@ -82,7 +83,7 @@ const Challenge = () => {
         position: 'bottom-right',
       });
     }
-  }, [sendAnswerError]);
+  }, [sendAnswerError, toast]);
 
   if (loading) {
     return <Spinner />;
@@ -93,58 +94,61 @@ const Challenge = () => {
   return (
     <ChakraProvider>
       <Box p={6} as="main">
-        <HStack>
+        <Stack direction={['column', 'row']}>
           <Heading>{challenge.title}</Heading>
-          {challenge.labels.map(({ name, id }) => (
-            <Tag variant="outline" key={id}>
-              {name}
-            </Tag>
-          ))}
-          {addLabelMode ? (
-            <HStack
-              spacing="0"
-              as="form"
-              onSubmit={(e) => {
-                e.preventDefault();
-                createLabel({
-                  variables: { name: newLabelValue, challengeId },
-                  refetchQueries: [ChallengeQuery],
-                  onCompleted: () => {
-                    setAddLabelMode(false);
-                  },
-                });
-              }}
-            >
+          <HStack>
+            {challenge.labels.map(({ name, id }) => (
+              <Tag variant="outline" key={id}>
+                <Icon as={AiFillTag} />
+                {name}
+              </Tag>
+            ))}
+            {addLabelMode ? (
+              <HStack
+                spacing="0"
+                as="form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  createLabel({
+                    variables: { name: newLabelValue, challengeId },
+                    refetchQueries: [ChallengeQuery],
+                    onCompleted: () => {
+                      setAddLabelMode(false);
+                    },
+                  });
+                }}
+              >
+                <IconButton
+                  size="xs"
+                  variant="unstyled"
+                  aria-label="remove"
+                  icon={<Icon as={FaTimes} />}
+                  onClick={() => setAddLabelMode(false)}
+                />
+                <Input
+                  required
+                  w="28"
+                  size="sm"
+                  rounded="md"
+                  placeholder="new label"
+                  value={newLabelValue}
+                  onChange={({ target: { value } }) => setNewLabelValue(value)}
+                />
+              </HStack>
+            ) : (
               <IconButton
-                size="xs"
-                variant="unstyled"
-                aria-label="remove"
-                icon={<Icon as={FaTimes} />}
-                onClick={() => setAddLabelMode(false)}
-              />
-              <Input
-                required
-                w="28"
                 size="sm"
-                rounded="md"
-                placeholder="new label"
-                value={newLabelValue}
-                onChange={({ target: { value } }) => setNewLabelValue(value)}
+                variant="outline"
+                aria-label="add label"
+                icon={<Icon as={BsPlus} />}
+                onClick={() => {
+                  setAddLabelMode(true);
+                  setNewLabelValue('');
+                }}
               />
-            </HStack>
-          ) : (
-            <IconButton
-              size="sm"
-              variant="outline"
-              aria-label="add label"
-              icon={<Icon as={BsPlus} />}
-              onClick={() => {
-                setAddLabelMode(true);
-                setNewLabelValue('');
-              }}
-            />
-          )}
-        </HStack>
+            )}
+          </HStack>
+        </Stack>
         <HStack>
           <Input
             placeholder="要約"
