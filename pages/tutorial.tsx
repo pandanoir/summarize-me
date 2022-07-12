@@ -1,5 +1,4 @@
 import {
-  chakra,
   Heading,
   Text,
   ChakraProvider,
@@ -9,11 +8,9 @@ import {
   Button,
   Box,
 } from '@chakra-ui/react';
-import { FC, PropsWithChildren } from 'react';
+import { FC } from 'react';
 
-const { span: InlineText } = chakra;
-
-const Challenge = () => {
+const Challenge:FC = () => {
   return (
     <ChakraProvider>
       <VStack p={6} as="main" spacing={12} align="stretch">
