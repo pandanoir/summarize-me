@@ -1,3 +1,4 @@
+import { getSession, UserProfile } from '@auth0/nextjs-auth0';
 import {
   Box,
   Button,
@@ -20,15 +21,15 @@ import {
   ChallengeChunkQuery,
   useAllChallenges,
 } from '../src/hooks/useAllChallenges';
-import { useIsSignIn } from '../src/hooks/useIsSignIn';
 import { fetchInitialData } from '../src/utils/fetchInitialData';
 
-const Home: NextPage = () => {
+const Home: NextPage<{ user: UserProfile | null }> = ({ user }) => {
   const { query } = useRouter();
   const after = Array.isArray(query.after) ? query.after[0] : query.after;
   const before = Array.isArray(query.before) ? query.before[0] : query.before;
   const { challenges, loading, error } = useAllChallenges({ after, before });
-  const isSignIn = useIsSignIn();
+  const isSignIn = user !== null;
+
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -118,18 +119,28 @@ const Home: NextPage = () => {
   );
 };
 
-export const getServerSideProps = async ({ query }: NextPageContext) => {
+export default Home;
+
+export const getServerSideProps = async ({
+  query,
+  req,
+  res,
+}: NextPageContext) => {
   const after = Array.isArray(query.after) ? query.after[0] : query.after;
   const before = Array.isArray(query.before) ? query.before[0] : query.before;
 
+  const [session, initialData] = await Promise.all([
+    req && res ? getSession(req, res) : null,
+    fetchInitialData({
+      query: ChallengeChunkQuery,
+      variables: before ? { before, last: 10 } : { after, first: 10 },
+    }),
+  ]);
+
   return {
     props: {
-      ...(await fetchInitialData({
-        query: ChallengeChunkQuery,
-        variables: before ? { before, last: 10 } : { after, first: 10 },
-      })),
+      ...initialData,
+      user: session?.user ?? null,
     },
   };
 };
-
-export default Home;
