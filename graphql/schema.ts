@@ -18,6 +18,9 @@ export const schema = makeSchema({
   plugins: [
     connectionPlugin({
       includeNodesField: true,
+      extendConnection: {
+        totalCount: { type: 'Int' },
+      },
     }),
   ],
 });

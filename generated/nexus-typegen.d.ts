@@ -16,7 +16,7 @@ declare global {
      */
     connectionField<FieldName extends string>(
       fieldName: FieldName,
-      config: connectionPluginCore.ConnectionFieldConfig<TypeName, FieldName>
+      config: connectionPluginCore.ConnectionFieldConfig<TypeName, FieldName> & { totalCount: connectionPluginCore.ConnectionFieldResolver<TypeName, FieldName, "totalCount"> }
     ): void
   }
 }
@@ -42,30 +42,31 @@ export interface NexusGenScalars {
 
 export interface NexusGenObjects {
   Answer: { // root type
-    challengeId: number; // Int!
+    challengeId: string; // ID!
     content: string; // String!
-    id: number; // Int!
+    id: string; // ID!
   }
   Challenge: { // root type
     authorId: string; // String!
-    id: number; // Int!
+    id: string; // ID!
     title: string; // String!
   }
   ChallengeConnection: { // root type
     edges: NexusGenRootTypes['ChallengeEdge'][]; // [ChallengeEdge!]!
     nodes: NexusGenRootTypes['Challenge'][]; // [Challenge!]!
     pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+    totalCount: number; // Int!
   }
   ChallengeEdge: { // root type
     cursor: string; // String!
     node: NexusGenRootTypes['Challenge']; // Challenge!
   }
   Label: { // root type
-    id: number; // Int!
+    id: string; // ID!
     name: string; // String!
   }
   Like: { // root type
-    id: number; // Int!
+    id: string; // ID!
     userId: string; // String!
   }
   Mutation: {};
@@ -90,16 +91,16 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
   Answer: { // field return type
-    challengeId: number; // Int!
+    challengeId: string; // ID!
     content: string; // String!
-    id: number; // Int!
+    id: string; // ID!
     isLiked: boolean; // Boolean!
     likeCount: number; // Int!
   }
   Challenge: { // field return type
     answers: NexusGenRootTypes['Answer'][]; // [Answer!]!
     authorId: string; // String!
-    id: number; // Int!
+    id: string; // ID!
     labels: NexusGenRootTypes['Label'][]; // [Label!]!
     title: string; // String!
   }
@@ -107,6 +108,7 @@ export interface NexusGenFieldTypes {
     edges: NexusGenRootTypes['ChallengeEdge'][]; // [ChallengeEdge!]!
     nodes: NexusGenRootTypes['Challenge'][]; // [Challenge!]!
     pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+    totalCount: number; // Int!
   }
   ChallengeEdge: { // field return type
     cursor: string; // String!
@@ -114,11 +116,11 @@ export interface NexusGenFieldTypes {
   }
   Label: { // field return type
     challenges: NexusGenRootTypes['Challenge'][]; // [Challenge!]!
-    id: number; // Int!
+    id: string; // ID!
     name: string; // String!
   }
   Like: { // field return type
-    id: number; // Int!
+    id: string; // ID!
     userId: string; // String!
   }
   Mutation: { // field return type
@@ -146,16 +148,16 @@ export interface NexusGenFieldTypes {
 
 export interface NexusGenFieldTypeNames {
   Answer: { // field return type name
-    challengeId: 'Int'
+    challengeId: 'ID'
     content: 'String'
-    id: 'Int'
+    id: 'ID'
     isLiked: 'Boolean'
     likeCount: 'Int'
   }
   Challenge: { // field return type name
     answers: 'Answer'
     authorId: 'String'
-    id: 'Int'
+    id: 'ID'
     labels: 'Label'
     title: 'String'
   }
@@ -163,6 +165,7 @@ export interface NexusGenFieldTypeNames {
     edges: 'ChallengeEdge'
     nodes: 'Challenge'
     pageInfo: 'PageInfo'
+    totalCount: 'Int'
   }
   ChallengeEdge: { // field return type name
     cursor: 'String'
@@ -170,11 +173,11 @@ export interface NexusGenFieldTypeNames {
   }
   Label: { // field return type name
     challenges: 'Challenge'
-    id: 'Int'
+    id: 'ID'
     name: 'String'
   }
   Like: { // field return type name
-    id: 'Int'
+    id: 'ID'
     userId: 'String'
   }
   Mutation: { // field return type name
@@ -203,7 +206,7 @@ export interface NexusGenFieldTypeNames {
 export interface NexusGenArgTypes {
   Mutation: {
     createAnswer: { // args
-      challengeId: number; // Int!
+      challengeId: string; // ID!
       content: string; // String!
     }
     createChallenge: { // args
@@ -211,22 +214,22 @@ export interface NexusGenArgTypes {
       title: string; // String!
     }
     createLabel: { // args
-      challengeId: number; // Int!
+      challengeId: string; // ID!
       name: string; // String!
     }
     createLike: { // args
-      answerId: number; // Int!
+      answerId: string; // ID!
     }
     deleteLike: { // args
-      answerId: number; // Int!
+      answerId: string; // ID!
     }
   }
   Query: {
     answers: { // args
-      challengeId: number; // Int!
+      challengeId: string; // ID!
     }
     challenge: { // args
-      id: number; // Int!
+      id: string; // ID!
     }
     challenges: { // args
       after?: string | null; // String
@@ -238,10 +241,10 @@ export interface NexusGenArgTypes {
       name: string; // String!
     }
     labels: { // args
-      challengeId: number; // Int!
+      challengeId: string; // ID!
     }
     likes: { // args
-      answerId: number; // Int!
+      answerId: string; // ID!
     }
   }
 }

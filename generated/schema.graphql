@@ -3,9 +3,9 @@
 
 
 type Answer {
-  challengeId: Int!
+  challengeId: ID!
   content: String!
-  id: Int!
+  id: ID!
   isLiked: Boolean!
   likeCount: Int!
 }
@@ -13,7 +13,7 @@ type Answer {
 type Challenge {
   answers: [Answer!]!
   authorId: String!
-  id: Int!
+  id: ID!
   labels: [Label!]!
   title: String!
 }
@@ -31,6 +31,7 @@ type ChallengeConnection {
   https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
   """
   pageInfo: PageInfo!
+  totalCount: Int!
 }
 
 type ChallengeEdge {
@@ -43,21 +44,21 @@ type ChallengeEdge {
 
 type Label {
   challenges: [Challenge!]!
-  id: Int!
+  id: ID!
   name: String!
 }
 
 type Like {
-  id: Int!
+  id: ID!
   userId: String!
 }
 
 type Mutation {
-  createAnswer(challengeId: Int!, content: String!): Answer!
+  createAnswer(challengeId: ID!, content: String!): Answer!
   createChallenge(labels: [String!], title: String!): Challenge!
-  createLabel(challengeId: Int!, name: String!): Label!
-  createLike(answerId: Int!): Like!
-  deleteLike(answerId: Int!): Like!
+  createLabel(challengeId: ID!, name: String!): Label!
+  createLike(answerId: ID!): Like!
+  deleteLike(answerId: ID!): Like!
 }
 
 """
@@ -86,8 +87,8 @@ type PageInfo {
 }
 
 type Query {
-  answers(challengeId: Int!): [Answer]!
-  challenge(id: Int!): Challenge
+  answers(challengeId: ID!): [Answer]!
+  challenge(id: ID!): Challenge
   challenges(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -102,6 +103,6 @@ type Query {
     last: Int
   ): ChallengeConnection!
   label(name: String!): Label
-  labels(challengeId: Int!): [Label!]!
-  likes(answerId: Int!): [Like]
+  labels(challengeId: ID!): [Label!]!
+  likes(answerId: ID!): [Like]
 }

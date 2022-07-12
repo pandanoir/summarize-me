@@ -5,15 +5,15 @@ import {
   extendType,
   nonNull,
   stringArg,
-  intArg,
+  idArg,
 } from 'nexus';
 
 export const Answer = objectType({
   name: 'Answer',
   definition(t) {
-    t.nonNull.int('id');
+    t.nonNull.id('id');
     t.nonNull.string('content');
-    t.nonNull.int('challengeId');
+    t.nonNull.id('challengeId');
     t.nonNull.field('likeCount', {
       type: 'Int',
       resolve(parent, _args, ctx) {
@@ -38,7 +38,7 @@ export const Answer = objectType({
 
 export const AnswersQuery = queryField('answers', {
   type: nonNull(list('Answer')),
-  args: { challengeId: nonNull(intArg()) },
+  args: { challengeId: nonNull(idArg()) },
   resolve(_parent, { challengeId }, ctx) {
     return ctx.prisma.answer.findMany({
       where: { challengeId },
@@ -56,7 +56,7 @@ export const CreateAnswerMutation = extendType({
   definition(t) {
     t.nonNull.field('createAnswer', {
       type: 'Answer',
-      args: { content: nonNull(stringArg()), challengeId: nonNull(intArg()) },
+      args: { content: nonNull(stringArg()), challengeId: nonNull(idArg()) },
       resolve(_parent, { challengeId, content }, ctx) {
         if (content.length === 0) {
           throw new Error('Content field is required');

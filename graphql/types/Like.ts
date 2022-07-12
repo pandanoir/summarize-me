@@ -4,14 +4,13 @@ import {
   list,
   extendType,
   nonNull,
-  stringArg,
-  intArg,
+  idArg,
 } from 'nexus';
 
 export const Like = objectType({
   name: 'Like',
   definition(t) {
-    t.nonNull.int('id');
+    t.nonNull.id('id');
     t.nonNull.string('userId');
   },
 });
@@ -19,7 +18,7 @@ export const Like = objectType({
 export const LikeQuery = queryField('likes', {
   type: list('Like'),
   args: {
-    answerId: nonNull(intArg()),
+    answerId: nonNull(idArg()),
   },
   resolve(_parent, { answerId }, ctx) {
     return ctx.prisma.like.findMany({ where: { answerId } });
@@ -31,7 +30,7 @@ export const CreateLikeMutation = extendType({
   definition(t) {
     t.nonNull.field('createLike', {
       type: 'Like',
-      args: { answerId: nonNull(intArg()) },
+      args: { answerId: nonNull(idArg()) },
       resolve(_parent, { answerId }, { user, prisma }) {
         if (!user)
           throw new Error(`You need to be logged in to perform an action`);
@@ -51,7 +50,7 @@ export const DeleteLikeMutation = extendType({
   definition(t) {
     t.nonNull.field('deleteLike', {
       type: 'Like',
-      args: { answerId: nonNull(intArg()) },
+      args: { answerId: nonNull(idArg()) },
       resolve(_parent, { answerId }, { user, prisma }) {
         if (!user)
           throw new Error(`You need to be logged in to perform an action`);

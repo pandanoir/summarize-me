@@ -5,13 +5,13 @@ import {
   stringArg,
   queryField,
   list,
-  intArg,
+  idArg,
 } from 'nexus';
 
 export const Challenge = objectType({
   name: 'Challenge',
   definition(t) {
-    t.nonNull.int('id');
+    t.nonNull.id('id');
     t.nonNull.string('title');
     t.nonNull.string('authorId');
     t.nonNull.list.field('labels', {
@@ -43,19 +43,27 @@ export const ChallengesQuery = queryField((t) => {
     nonNullDefaults: {
       output: true,
     },
-    nodes(root, args, ctx, info) {
-      if (args.before && args.last) {
-        return ctx.prisma.challenge.findMany({
-          take: -args.last - 1,
-          cursor: { id: Number(args.before) },
-          include: { answers: true },
+    cursorFromNode: (node) => node.id,
+    nodes(_, args, { prisma }) {
+      let cursor: string | null | undefined;
+      let take: number | undefined;
+      if (args.last != null && args.before != null) {
+        return prisma.challenge.findMany({
+          cursor: { id: args.before },
+          skip: 1,
+          take: -(args.last + 1),
         });
       }
-      return ctx.prisma.challenge.findMany({
-        take: (args.first || 10) + 1,
-        ...(args.after && { cursor: { id: Number(args.after) } }),
-        include: { answers: true },
+      cursor = args.after;
+      take = args.first! + 1; // first も last もなかった場合、connectionPlugin がエラーを吐くので ! を使っている
+      return prisma.challenge.findMany({
+        cursor: cursor != null ? { id: cursor } : undefined,
+        skip: cursor != null ? 1 : 0,
+        take,
       });
+    },
+    totalCount(_par, _args, { prisma }) {
+      return prisma.challenge.count();
     },
   });
 });
@@ -63,7 +71,7 @@ export const ChallengesQuery = queryField((t) => {
 export const ChallengeQuery = queryField('challenge', {
   type: 'Challenge',
   args: {
-    id: nonNull(intArg()),
+    id: nonNull(idArg()),
   },
   resolve(_parent, { id }, ctx) {
     return ctx.prisma.challenge.findFirst({

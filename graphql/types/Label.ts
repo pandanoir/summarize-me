@@ -3,15 +3,15 @@ import {
   queryField,
   list,
   nonNull,
-  intArg,
   stringArg,
   extendType,
+  idArg,
 } from 'nexus';
 
 export const Label = objectType({
   name: 'Label',
   definition(t) {
-    t.nonNull.int('id');
+    t.nonNull.id('id');
     t.nonNull.string('name');
     t.nonNull.list.field('challenges', {
       type: nonNull('Challenge'),
@@ -27,7 +27,7 @@ export const Label = objectType({
 export const LabelsQuery = queryField('labels', {
   type: nonNull(list(nonNull('Label'))),
   args: {
-    challengeId: nonNull(intArg()),
+    challengeId: nonNull(idArg()),
   },
   resolve(_parent, { challengeId }, ctx) {
     return ctx.prisma.challenge
@@ -51,7 +51,7 @@ export const CreateLabelMutation = extendType({
   definition(t) {
     t.nonNull.field('createLabel', {
       type: 'Label',
-      args: { name: nonNull(stringArg()), challengeId: nonNull(intArg()) },
+      args: { name: nonNull(stringArg()), challengeId: nonNull(idArg()) },
       async resolve(_parent, { name, challengeId }, ctx) {
         await ctx.prisma.challenge.update({
           where: { id: challengeId },

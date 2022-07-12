@@ -40,15 +40,17 @@ import {
 import { fetchInitialData } from '../../src/utils/fetchInitialData';
 
 const createLabelMutation = gql`
-  mutation CreateLabel($name: String!, $challengeId: Int!) {
+  mutation CreateLabel($name: String!, $challengeId: Id!) {
     createLabel(name: $name, challengeId: $challengeId) {
       name
     }
   }
 `;
 const Challenge = () => {
-  const router = useRouter();
-  const challengeId = Number(router.query.challenge_id);
+  const { query } = useRouter();
+  const challengeId = Array.isArray(query.challenge_id)
+    ? query.challenge_id[0]
+    : query.challenge_id || '';
   const isSignIn = useIsSignIn();
   const { challenge, loading } = useChallenge(challengeId);
   const [sendAnswer, sendAnswerError] = useSendAnswer();
@@ -234,10 +236,8 @@ const Challenge = () => {
 export default Challenge;
 
 export const getServerSideProps = async (context: NextPageContext) => {
-  const challengeId = Number(context.query.challenge_id);
-  if (isNaN(challengeId)) {
-    return { props: { initialData: null } };
-  }
+  const challengeId = context.query.challenge_id;
+  if (!challengeId) return { props: { initialData: null } };
   return {
     props: {
       ...(await fetchInitialData({

@@ -11,37 +11,38 @@ datasource db {
 }
 
 model Challenge {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(cuid())
   title     String   @db.VarChar(100)
   authorId  String
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
-  answers   Answer[]
-  labels    Label[]
+
+  answers Answer[]
+  labels  Label[]
 }
 
 model Answer {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(cuid())
   content   String   @db.VarChar(280)
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
 
   challenge   Challenge @relation(fields: [challengeId], references: [id])
-  challengeId Int
+  challengeId String
   likes       Like[]
 }
 
 model Like {
-  id       Int    @id @default(autoincrement())
+  id       String @id @default(cuid())
   userId   String
-  answerId Int
+  answerId String
   Answer   Answer @relation(fields: [answerId], references: [id])
 
   @@unique([userId, answerId])
 }
 
 model Label {
-  id         Int         @id @default(autoincrement())
+  id         String      @id @default(cuid())
   name       String      @unique
   challenges Challenge[]
 }

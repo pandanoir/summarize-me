@@ -6,7 +6,7 @@ import {
 } from '../../generated/nexus-typegen';
 
 const ChallengeQuery = gql`
-  query Answers($challengeId: Int!) {
+  query Answers($challengeId: Id!) {
     answers(challengeId: $challengeId) {
       id
       content
@@ -16,21 +16,21 @@ const ChallengeQuery = gql`
   }
 `;
 const createLikeQuery = gql`
-  mutation CreateLike($answerId: Int!) {
+  mutation CreateLike($answerId: Id!) {
     createLike(answerId: $answerId) {
       __typename
     }
   }
 `;
 const deleteLikeQuery = gql`
-  mutation DeleteLike($answerId: Int!) {
+  mutation DeleteLike($answerId: Id!) {
     deleteLike(answerId: $answerId) {
       __typename
     }
   }
 `;
 
-export const useAnswers = (challengeId: number) => {
+export const useAnswers = (challengeId: string) => {
   const [load, { data: answers, loading, error }] = useLazyQuery<
     {
       answers: Pick<
