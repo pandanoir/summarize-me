@@ -6,6 +6,7 @@ import {
   queryField,
   list,
   idArg,
+  connectionPlugin,
 } from 'nexus';
 
 export const Challenge = objectType({
@@ -44,6 +45,22 @@ export const ChallengesQuery = queryField((t) => {
       output: true,
     },
     cursorFromNode: (node) => node.id,
+    pageInfoFromNodes(nodes, args) {
+      const hasPreviousPage: typeof connectionPlugin['defaultHasPreviousPage'] =
+        (nodes, args) => {
+          if (typeof args.first === 'number') {
+            return Boolean(args.after && args.after !== '0');
+          }
+          if (typeof args.last === 'number') {
+            return nodes.length > args.last;
+          }
+          throw new Error('Unreachable');
+        };
+      return {
+        hasNextPage: connectionPlugin.defaultHasNextPage(nodes, args),
+        hasPreviousPage: hasPreviousPage(nodes, args),
+      };
+    },
     nodes(_, args, { prisma }) {
       let cursor: string | null | undefined;
       let take: number | undefined;
