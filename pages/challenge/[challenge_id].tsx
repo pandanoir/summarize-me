@@ -40,7 +40,7 @@ import {
 import { fetchInitialData } from '../../src/utils/fetchInitialData';
 
 const createLabelMutation = gql`
-  mutation CreateLabel($name: String!, $challengeId: Id!) {
+  mutation CreateLabel($name: String!, $challengeId: ID!) {
     createLabel(name: $name, challengeId: $challengeId) {
       name
     }

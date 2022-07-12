@@ -6,7 +6,7 @@ import {
 } from '../../generated/nexus-typegen';
 
 const ChallengeQuery = gql`
-  query Answers($challengeId: Id!) {
+  query Answers($challengeId: ID!) {
     answers(challengeId: $challengeId) {
       id
       content
@@ -16,14 +16,14 @@ const ChallengeQuery = gql`
   }
 `;
 const createLikeQuery = gql`
-  mutation CreateLike($answerId: Id!) {
+  mutation CreateLike($answerId: ID!) {
     createLike(answerId: $answerId) {
       __typename
     }
   }
 `;
 const deleteLikeQuery = gql`
-  mutation DeleteLike($answerId: Id!) {
+  mutation DeleteLike($answerId: ID!) {
     deleteLike(answerId: $answerId) {
       __typename
     }
