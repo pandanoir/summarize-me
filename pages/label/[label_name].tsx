@@ -37,7 +37,6 @@ const LabelQuery = gql`
 `;
 const Label = ({ label }: ServerProps) => {
   const router = useRouter();
-  console.log(label);
   const { data, loading } = useQuery<{
     label: NexusGenFieldTypes['Label'];
   }>(LabelQuery, {

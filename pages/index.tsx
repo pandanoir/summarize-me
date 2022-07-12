@@ -36,7 +36,6 @@ const Home: NextPage<{ user: UserProfile | null }> = ({ user }) => {
   if (error) {
     return <p>Error: {error.message}</p>;
   }
-  console.log(challenges?.challenges.pageInfo);
   return (
     <ChakraProvider>
       <Head>
