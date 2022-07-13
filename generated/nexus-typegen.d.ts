@@ -42,6 +42,7 @@ export interface NexusGenScalars {
 
 export interface NexusGenObjects {
   Answer: { // root type
+    authorId: string; // ID!
     challengeId: string; // ID!
     content: string; // String!
     id: string; // ID!
@@ -91,6 +92,7 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
   Answer: { // field return type
+    authorId: string; // ID!
     challengeId: string; // ID!
     content: string; // String!
     id: string; // ID!
@@ -148,6 +150,7 @@ export interface NexusGenFieldTypes {
 
 export interface NexusGenFieldTypeNames {
   Answer: { // field return type name
+    authorId: 'ID'
     challengeId: 'ID'
     content: 'String'
     id: 'ID'

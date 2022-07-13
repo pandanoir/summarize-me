@@ -14,6 +14,7 @@ export const Answer = objectType({
     t.nonNull.id('id');
     t.nonNull.string('content');
     t.nonNull.id('challengeId');
+    t.nonNull.id('authorId');
     t.nonNull.field('likeCount', {
       type: 'Int',
       resolve(parent, _args, ctx) {
@@ -57,15 +58,14 @@ export const CreateAnswerMutation = extendType({
     t.nonNull.field('createAnswer', {
       type: 'Answer',
       args: { content: nonNull(stringArg()), challengeId: nonNull(idArg()) },
-      resolve(_parent, { challengeId, content }, ctx) {
-        if (content.length === 0) {
-          throw new Error('Content field is required');
-        }
-        if (content.length > 280) {
-          throw new Error('The answer is too long');
-        }
-        return ctx.prisma.answer.create({
-          data: { content, challengeId },
+      resolve(_parent, { challengeId, content }, { user, prisma }) {
+        if (!user)
+          throw new Error(`You need to be logged in to perform an action`);
+        if (content.length === 0) throw new Error('Content field is required');
+        if (content.length > 280) throw new Error('The answer is too long');
+
+        return prisma.answer.create({
+          data: { content, challengeId, authorId: user.user.sub },
         });
       },
     });

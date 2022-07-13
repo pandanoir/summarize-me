@@ -62,8 +62,6 @@ export const ChallengesQuery = queryField((t) => {
       };
     },
     nodes(_, args, { prisma }) {
-      let cursor: string | null | undefined;
-      let take: number | undefined;
       if (args.last != null && args.before != null) {
         return prisma.challenge.findMany({
           cursor: { id: args.before },
@@ -71,8 +69,8 @@ export const ChallengesQuery = queryField((t) => {
           take: -(args.last + 1),
         });
       }
-      cursor = args.after;
-      take = args.first! + 1; // first も last もなかった場合、connectionPlugin がエラーを吐くので ! を使っている
+      const cursor = args.after;
+      const take = args.first! + 1; // first も last もなかった場合、connectionPlugin がエラーを吐くので ! を使っている
       return prisma.challenge.findMany({
         cursor: cursor != null ? { id: cursor } : undefined,
         skip: cursor != null ? 1 : 0,

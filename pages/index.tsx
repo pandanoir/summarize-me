@@ -1,4 +1,4 @@
-import { getSession, UserProfile } from '@auth0/nextjs-auth0';
+import { getSession } from '@auth0/nextjs-auth0';
 import {
   Box,
   Button,
@@ -23,12 +23,12 @@ import {
 } from '../src/hooks/useAllChallenges';
 import { fetchInitialData } from '../src/utils/fetchInitialData';
 
-const Home: NextPage<{ user: UserProfile | null }> = ({ user }) => {
+type Props = { isSignedIn: boolean };
+const Home: NextPage<Props> = ({ isSignedIn }) => {
   const { query } = useRouter();
   const after = Array.isArray(query.after) ? query.after[0] : query.after;
   const before = Array.isArray(query.before) ? query.before[0] : query.before;
   const { challenges, loading, error } = useAllChallenges({ after, before });
-  const isSignIn = user !== null;
 
   if (loading) {
     return <p>Loading...</p>;
@@ -44,7 +44,7 @@ const Home: NextPage<{ user: UserProfile | null }> = ({ user }) => {
       <VStack p={6} as="main" spacing={12} align="left">
         <HStack justify="space-between">
           <Heading>summarize me</Heading>
-          {isSignIn ? (
+          {isSignedIn ? (
             <Button as="a" href="/api/auth/logout">
               Log out
             </Button>
@@ -102,7 +102,7 @@ const Home: NextPage<{ user: UserProfile | null }> = ({ user }) => {
             </Button>
           )}
         </HStack>
-        {isSignIn ? (
+        {isSignedIn ? (
           <Button as="a" href="/challenge/create" w="max">
             問題を作る
           </Button>
@@ -135,11 +135,11 @@ export const getServerSideProps = async ({
       variables: before ? { before, last: 10 } : { after, first: 10 },
     }),
   ]);
-
+  const props: Props = {
+    ...initialData,
+    isSignedIn: !!session?.user,
+  };
   return {
-    props: {
-      ...initialData,
-      user: session?.user ?? null,
-    },
+    props,
   };
 };

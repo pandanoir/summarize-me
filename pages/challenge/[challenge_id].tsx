@@ -17,6 +17,7 @@ import {
   Stack,
   Link,
   VStack,
+  Tooltip,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -28,9 +29,8 @@ import {
 import { AiFillHeart, AiFillTag, AiOutlineHeart } from 'react-icons/ai';
 import { BsPlus } from 'react-icons/bs';
 import { FaTimes } from 'react-icons/fa';
-import { NextPageContext } from 'next';
+import { NextPage, NextPageContext } from 'next';
 import { useAnswers } from '../../src/hooks/useAnswers';
-import { useIsSignIn } from '../../src/hooks/useIsSignIn';
 import { useMutation } from '@apollo/client';
 import { gql } from 'apollo-server-micro';
 import {
@@ -38,6 +38,7 @@ import {
   NexusGenFieldTypes,
 } from '../../generated/nexus-typegen';
 import { fetchInitialData } from '../../src/utils/fetchInitialData';
+import { getSession } from '@auth0/nextjs-auth0';
 
 const createLabelMutation = gql`
   mutation CreateLabel($name: String!, $challengeId: ID!) {
@@ -46,12 +47,12 @@ const createLabelMutation = gql`
     }
   }
 `;
-const Challenge = () => {
+type Props = { isSignedIn: boolean };
+const Challenge: NextPage<Props> = ({ isSignedIn }) => {
   const { query } = useRouter();
   const challengeId = Array.isArray(query.challenge_id)
     ? query.challenge_id[0]
     : query.challenge_id || '';
-  const isSignIn = useIsSignIn();
   const { challenge, loading } = useChallenge(challengeId);
   const [sendAnswer, sendAnswerError] = useSendAnswer();
   const {
@@ -155,22 +156,32 @@ const Challenge = () => {
             )}
           </Flex>
         </Stack>
-        <HStack>
-          <Input
-            placeholder="要約"
-            value={value}
-            onChange={({ target: { value } }) => setValue(value)}
-          />
-          <Button
-            onClick={() =>
-              sendAnswer({
-                variables: { content: value, challengeId: challenge.id },
-              }).catch(() => {})
-            }
-          >
-            投稿する
-          </Button>
-        </HStack>
+        <Tooltip
+          hasArrow
+          isDisabled={isSignedIn}
+          shouldWrapChildren
+          label="ログインが必要です"
+          bg="red.600"
+        >
+          <HStack>
+            <Input
+              placeholder="要約"
+              value={value}
+              onChange={({ target: { value } }) => setValue(value)}
+              disabled={!isSignedIn}
+            />
+            <Button
+              onClick={() =>
+                sendAnswer({
+                  variables: { content: value, challengeId: challenge.id },
+                }).catch(() => {})
+              }
+              disabled={!isSignedIn}
+            >
+              投稿する
+            </Button>
+          </HStack>
+        </Tooltip>
         {!showsAnswers ? (
           <Button
             onClick={() => {
@@ -190,7 +201,7 @@ const Challenge = () => {
             {answers.map((answer) => (
               <ListItem key={answer.id}>
                 {answer.content}
-                {isSignIn ? (
+                {isSignedIn ? (
                   <Box>
                     <Button
                       colorScheme="pink"
@@ -235,17 +246,28 @@ const Challenge = () => {
 };
 export default Challenge;
 
-export const getServerSideProps = async (context: NextPageContext) => {
-  const challengeId = context.query.challenge_id;
+export const getServerSideProps = async ({
+  query,
+  req,
+  res,
+}: NextPageContext) => {
+  const challengeId = query.challenge_id;
   if (!challengeId) return { props: { initialData: null } };
+  const [session, initialData] = await Promise.all([
+    req && res ? getSession(req, res) : null,
+    fetchInitialData({
+      query: ChallengeQuery,
+      variables: {
+        id: challengeId,
+      },
+    }),
+  ]);
+
+  const props: Props = {
+    ...initialData,
+    isSignedIn: !!session?.user,
+  };
   return {
-    props: {
-      ...(await fetchInitialData({
-        query: ChallengeQuery,
-        variables: {
-          id: challengeId,
-        },
-      })),
-    },
+    props,
   };
 };
