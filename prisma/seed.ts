@@ -42,6 +42,7 @@ const main = async () => {
               userId: '',
             },
           },
+          authorId,
         },
       },
     },
