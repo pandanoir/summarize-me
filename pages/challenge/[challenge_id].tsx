@@ -174,6 +174,10 @@ const Challenge: NextPage<Props> = ({ isSignedIn }) => {
               onClick={() =>
                 sendAnswer({
                   variables: { content: value, challengeId: challenge.id },
+                  onCompleted: () => {
+                    setShowsAnswers(true);
+                    loadAnswers();
+                  },
                 }).catch(() => {})
               }
               disabled={!isSignedIn}
