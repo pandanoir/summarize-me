@@ -54,6 +54,7 @@ model Label {
 model User {
   id        String      @unique
   iconUrl   String      @default("")
+  username  String      @default("")
   Answer    Answer[]
   Challenge Challenge[]
   Like      Like[]
