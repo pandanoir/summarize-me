@@ -14,6 +14,7 @@ model Challenge {
   id        String   @id @default(cuid())
   title     String   @db.VarChar(100)
   authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
 
@@ -25,6 +26,7 @@ model Answer {
   id        String   @id @default(cuid())
   content   String   @db.VarChar(280)
   authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
 
@@ -36,6 +38,7 @@ model Answer {
 model Like {
   id       String @id @default(cuid())
   userId   String
+  user     User   @relation(fields: [userId], references: [id])
   answerId String
   Answer   Answer @relation(fields: [answerId], references: [id])
 
@@ -46,4 +49,12 @@ model Label {
   id         String      @id @default(cuid())
   name       String      @unique
   challenges Challenge[]
+}
+
+model User {
+  id        String      @unique
+  iconUrl   String      @default("")
+  Answer    Answer[]
+  Challenge Challenge[]
+  Like      Like[]
 }
