@@ -1,5 +1,4 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0';
-import session from '@auth0/nextjs-auth0/dist/session/session';
 import {
   Button,
   ChakraProvider,
