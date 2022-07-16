@@ -11,6 +11,11 @@ import {
   Tag,
   VStack,
   Icon,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Avatar,
 } from '@chakra-ui/react';
 import { gql } from 'apollo-server-micro';
 import { NextPage, NextPageContext } from 'next';
@@ -37,7 +42,7 @@ type Props =
       isSignedIn: false;
       profile: null;
     };
-const Home: NextPage<Props> = ({ isSignedIn }) => {
+const Home: NextPage<Props> = ({ isSignedIn, profile }) => {
   const { query } = useRouter();
   const after = Array.isArray(query.after) ? query.after[0] : query.after;
   const before = Array.isArray(query.before) ? query.before[0] : query.before;
@@ -58,9 +63,16 @@ const Home: NextPage<Props> = ({ isSignedIn }) => {
         <HStack justify="space-between">
           <Heading>summarize me</Heading>
           {isSignedIn ? (
-            <Button as="a" href="/api/auth/logout">
-              Log out
-            </Button>
+            <Menu>
+              <MenuButton>
+                <Avatar src={profile.iconUrl} />
+              </MenuButton>
+              <MenuList>
+                <MenuItem as="a" href="/api/auth/logout">
+                  Log out
+                </MenuItem>
+              </MenuList>
+            </Menu>
           ) : (
             <Button as="a" href="/api/auth/login">
               Log in/Sign up
