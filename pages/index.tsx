@@ -12,18 +12,31 @@ import {
   VStack,
   Icon,
 } from '@chakra-ui/react';
+import { gql } from 'apollo-server-micro';
 import { NextPage, NextPageContext } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { AiFillTag } from 'react-icons/ai';
 import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 import {
+  NexusGenArgTypes,
+  NexusGenFieldTypes,
+} from '../generated/nexus-typegen';
+import {
   ChallengeChunkQuery,
   useAllChallenges,
 } from '../src/hooks/useAllChallenges';
-import { fetchInitialData } from '../src/utils/fetchInitialData';
+import { fetchData, fetchInitialData } from '../src/utils/fetchInitialData';
 
-type Props = { isSignedIn: boolean };
+type Props =
+  | {
+      isSignedIn: true;
+      profile: NexusGenFieldTypes['User'];
+    }
+  | {
+      isSignedIn: false;
+      profile: null;
+    };
 const Home: NextPage<Props> = ({ isSignedIn }) => {
   const { query } = useRouter();
   const after = Array.isArray(query.after) ? query.after[0] : query.after;
@@ -135,9 +148,31 @@ export const getServerSideProps = async ({
       variables: before ? { before, last: 10 } : { after, first: 10 },
     }),
   ]);
+  const isSignedIn = !!session?.user;
+
   const props: Props = {
     ...initialData,
-    isSignedIn: !!session?.user,
+    ...(isSignedIn
+      ? {
+          isSignedIn,
+          profile: (
+            await fetchData<
+              { user: NexusGenFieldTypes['User'] },
+              NexusGenArgTypes['Query']['user']
+            >({
+              query: gql`
+                query User($id: ID!) {
+                  user(id: $id) {
+                    username
+                    iconUrl
+                  }
+                }
+              `,
+              variables: { id: session.user.sub },
+            })
+          ).user,
+        }
+      : { isSignedIn, profile: null }),
   };
   return {
     props,
