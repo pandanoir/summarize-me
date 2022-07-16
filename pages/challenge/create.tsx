@@ -1,4 +1,5 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0';
+import session from '@auth0/nextjs-auth0/dist/session/session';
 import {
   Button,
   ChakraProvider,
@@ -11,14 +12,27 @@ import {
   IconButton,
   Icon,
   useToast,
+  Avatar,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
 } from '@chakra-ui/react';
-import { NextPage } from 'next';
+import { gql } from 'apollo-server-micro';
+import { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
 import { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
+import {
+  NexusGenArgTypes,
+  NexusGenFieldTypes,
+} from '../../generated/nexus-typegen';
 import { useCreateChallenge } from '../../src/hooks/useChallenge';
+import { fetchData } from '../../src/utils/fetchInitialData';
 
-const ChallengeCreatePage: NextPage = () => {
+const ChallengeCreatePage: NextPage<{
+  profile: NexusGenFieldTypes['User'];
+}> = ({ profile }) => {
   const [titleValue, setTitleValue] = useState('');
   const [labelValue, setLabelValue] = useState('');
   const [labels, setLabels] = useState<string[]>([]);
@@ -33,9 +47,16 @@ const ChallengeCreatePage: NextPage = () => {
       <VStack p={6} as="main" spacing={12} align="left">
         <HStack justify="space-between">
           <Heading>summarize me</Heading>
-          <Button as="a" href="/api/auth/logout">
-            Log out
-          </Button>
+          <Menu>
+            <MenuButton>
+              <Avatar src={profile.iconUrl} />
+            </MenuButton>
+            <MenuList>
+              <MenuItem as="a" href="/api/auth/logout">
+                Log out
+              </MenuItem>
+            </MenuList>
+          </Menu>
         </HStack>
         <Heading size="lg">問題を作る</Heading>
         <VStack align="left">
@@ -107,4 +128,35 @@ const ChallengeCreatePage: NextPage = () => {
 };
 export default ChallengeCreatePage;
 
-export const getServerSideProps = withPageAuthRequired();
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const authResult = await withPageAuthRequired()(ctx);
+  if (!('props' in authResult)) {
+    return authResult;
+  }
+  const sub = (await authResult.props).user?.sub;
+  if (!sub) {
+    throw new Error('Unexpected error');
+  }
+  const profile = (
+    await fetchData<
+      { user: NexusGenFieldTypes['User'] },
+      NexusGenArgTypes['Query']['user']
+    >({
+      query: gql`
+        query User($id: ID!) {
+          user(id: $id) {
+            username
+            iconUrl
+          }
+        }
+      `,
+      variables: { id: sub },
+    })
+  ).user;
+  return {
+    props: {
+      ...authResult.props,
+      profile,
+    },
+  };
+};

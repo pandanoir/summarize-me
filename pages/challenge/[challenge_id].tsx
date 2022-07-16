@@ -19,6 +19,11 @@ import {
   Tooltip,
   Grid,
   GridItem,
+  Avatar,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -38,7 +43,7 @@ import {
   NexusGenArgTypes,
   NexusGenFieldTypes,
 } from '../../generated/nexus-typegen';
-import { fetchInitialData } from '../../src/utils/fetchInitialData';
+import { fetchData, fetchInitialData } from '../../src/utils/fetchInitialData';
 import { getSession } from '@auth0/nextjs-auth0';
 
 const createLabelMutation = gql`
@@ -48,8 +53,17 @@ const createLabelMutation = gql`
     }
   }
 `;
-type Props = { isSignedIn: boolean };
-const Challenge: NextPage<Props> = ({ isSignedIn }) => {
+
+type Props =
+  | {
+      isSignedIn: true;
+      profile: NexusGenFieldTypes['User'];
+    }
+  | {
+      isSignedIn: false;
+      profile: null;
+    };
+const Challenge: NextPage<Props> = ({ isSignedIn, profile }) => {
   const { query } = useRouter();
   const challengeId = Array.isArray(query.challenge_id)
     ? query.challenge_id[0]
@@ -171,9 +185,16 @@ const Challenge: NextPage<Props> = ({ isSignedIn }) => {
           </GridItem>
           <GridItem area="button" w="max">
             {isSignedIn ? (
-              <Button as="a" href="/api/auth/logout">
-                Log out
-              </Button>
+              <Menu>
+                <MenuButton>
+                  <Avatar src={profile.iconUrl} />
+                </MenuButton>
+                <MenuList>
+                  <MenuItem as="a" href="/api/auth/logout">
+                    Log out
+                  </MenuItem>
+                </MenuList>
+              </Menu>
             ) : (
               <Button as="a" href="/api/auth/login">
                 Log in/Sign up
@@ -291,10 +312,31 @@ export const getServerSideProps = async ({
       },
     }),
   ]);
+  const isSignedIn = !!session?.user;
 
   const props: Props = {
     ...initialData,
-    isSignedIn: !!session?.user,
+    ...(isSignedIn
+      ? {
+          isSignedIn,
+          profile: (
+            await fetchData<
+              { user: NexusGenFieldTypes['User'] },
+              NexusGenArgTypes['Query']['user']
+            >({
+              query: gql`
+                query User($id: ID!) {
+                  user(id: $id) {
+                    username
+                    iconUrl
+                  }
+                }
+              `,
+              variables: { id: session.user.sub },
+            })
+          ).user,
+        }
+      : { isSignedIn, profile: null }),
   };
   return {
     props,
