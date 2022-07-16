@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
-    "iconUrl" TEXT NOT NULL
+    "iconUrl" TEXT NOT NULL DEFAULT E''
 );
 
 -- CreateIndex
