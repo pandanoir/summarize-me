@@ -78,6 +78,11 @@ export interface NexusGenObjects {
     startCursor?: string | null; // String
   }
   Query: {};
+  User: { // root type
+    iconUrl: string; // String!
+    id: string; // ID!
+    username: string; // String!
+  }
 }
 
 export interface NexusGenInterfaces {
@@ -145,6 +150,12 @@ export interface NexusGenFieldTypes {
     label: NexusGenRootTypes['Label'] | null; // Label
     labels: NexusGenRootTypes['Label'][]; // [Label!]!
     likes: Array<NexusGenRootTypes['Like'] | null> | null; // [Like]
+    user: NexusGenRootTypes['User'] | null; // User
+  }
+  User: { // field return type
+    iconUrl: string; // String!
+    id: string; // ID!
+    username: string; // String!
   }
 }
 
@@ -203,6 +214,12 @@ export interface NexusGenFieldTypeNames {
     label: 'Label'
     labels: 'Label'
     likes: 'Like'
+    user: 'User'
+  }
+  User: { // field return type name
+    iconUrl: 'String'
+    id: 'ID'
+    username: 'String'
   }
 }
 
@@ -248,6 +265,9 @@ export interface NexusGenArgTypes {
     }
     likes: { // args
       answerId: string; // ID!
+    }
+    user: { // args
+      id: string; // ID!
     }
   }
 }
