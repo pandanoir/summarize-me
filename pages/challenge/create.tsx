@@ -11,11 +11,6 @@ import {
   IconButton,
   Icon,
   useToast,
-  Avatar,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
 } from '@chakra-ui/react';
 import { gql } from 'apollo-server-micro';
 import { GetServerSideProps, NextPage } from 'next';
@@ -26,6 +21,7 @@ import {
   NexusGenArgTypes,
   NexusGenFieldTypes,
 } from '../../generated/nexus-typegen';
+import { UserMenu } from '../../src/components/UserMenu';
 import { useCreateChallenge } from '../../src/hooks/useChallenge';
 import { fetchData } from '../../src/utils/fetchInitialData';
 
@@ -46,16 +42,7 @@ const ChallengeCreatePage: NextPage<{
       <VStack p={6} as="main" spacing={12} align="left">
         <HStack justify="space-between">
           <Heading>summarize me</Heading>
-          <Menu>
-            <MenuButton>
-              <Avatar src={profile.iconUrl} />
-            </MenuButton>
-            <MenuList>
-              <MenuItem as="a" href="/api/auth/logout">
-                Log out
-              </MenuItem>
-            </MenuList>
-          </Menu>
+          <UserMenu iconUrl={profile.iconUrl} />
         </HStack>
         <Heading size="lg">問題を作る</Heading>
         <VStack align="left">

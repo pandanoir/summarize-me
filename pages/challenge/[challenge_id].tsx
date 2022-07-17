@@ -19,11 +19,6 @@ import {
   Tooltip,
   Grid,
   GridItem,
-  Avatar,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -45,6 +40,7 @@ import {
 } from '../../generated/nexus-typegen';
 import { fetchData, fetchInitialData } from '../../src/utils/fetchInitialData';
 import { getSession } from '@auth0/nextjs-auth0';
+import { UserMenu } from '../../src/components/UserMenu';
 
 const createLabelMutation = gql`
   mutation CreateLabel($name: String!, $challengeId: ID!) {
@@ -185,16 +181,7 @@ const Challenge: NextPage<Props> = ({ isSignedIn, profile }) => {
           </GridItem>
           <GridItem area="button" w="max">
             {isSignedIn ? (
-              <Menu>
-                <MenuButton>
-                  <Avatar src={profile.iconUrl} />
-                </MenuButton>
-                <MenuList>
-                  <MenuItem as="a" href="/api/auth/logout">
-                    Log out
-                  </MenuItem>
-                </MenuList>
-              </Menu>
+              <UserMenu iconUrl={profile.iconUrl} />
             ) : (
               <Button as="a" href="/api/auth/login">
                 Log in/Sign up

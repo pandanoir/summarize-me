@@ -11,11 +11,6 @@ import {
   Tag,
   VStack,
   Icon,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Avatar,
 } from '@chakra-ui/react';
 import { gql } from 'apollo-server-micro';
 import { NextPage, NextPageContext } from 'next';
@@ -27,6 +22,7 @@ import {
   NexusGenArgTypes,
   NexusGenFieldTypes,
 } from '../generated/nexus-typegen';
+import { UserMenu } from '../src/components/UserMenu';
 import {
   ChallengeChunkQuery,
   useAllChallenges,
@@ -63,16 +59,7 @@ const Home: NextPage<Props> = ({ isSignedIn, profile }) => {
         <HStack justify="space-between">
           <Heading>summarize me</Heading>
           {isSignedIn ? (
-            <Menu>
-              <MenuButton>
-                <Avatar src={profile.iconUrl} />
-              </MenuButton>
-              <MenuList>
-                <MenuItem as="a" href="/api/auth/logout">
-                  Log out
-                </MenuItem>
-              </MenuList>
-            </Menu>
+            <UserMenu iconUrl={profile.iconUrl} />
           ) : (
             <Button as="a" href="/api/auth/login">
               Log in/Sign up
