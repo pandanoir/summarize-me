@@ -12,7 +12,7 @@ export const createApolloClient = (cache: NormalizedCacheObject = {}) =>
     uri: `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/graphql`,
     cache: new InMemoryCache().restore(cache),
     link: createUploadLink({
-      uri: '/api/graphql',
+      uri: `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/graphql`,
       headers: { 'Apollo-Require-Preflight': 'true' },
     }),
   });
