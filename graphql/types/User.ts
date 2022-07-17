@@ -73,14 +73,14 @@ export const uploadFileToS3 = async (createReadStream: any, filename: any) => {
   const s3 = new S3({
     region: 'ap-northeast-1',
     apiVersion: '2006-03-01',
-    accessKeyId: process.env.AWS_ACCESS_KEY,
-    secretAccessKey: process.env.AWS_SECRET_KEY,
+    accessKeyId: process.env.MY_AWS_ACCESS_KEY,
+    secretAccessKey: process.env.MY_AWS_SECRET_KEY,
   });
   const data = await s3
     .upload({
       Body: createReadStream(),
       Key: `${v4()}${extname(filename)}`,
-      Bucket: process.env.S3_BUCKET!,
+      Bucket: process.env.MY_S3_BUCKET!,
     })
     .promise();
   return data.Location;
