@@ -38,6 +38,7 @@ export interface NexusGenScalars {
   Float: number
   Boolean: boolean
   ID: string
+  Upload: any
 }
 
 export interface NexusGenObjects {
@@ -62,6 +63,13 @@ export interface NexusGenObjects {
     cursor: string; // String!
     node: NexusGenRootTypes['Challenge']; // Challenge!
   }
+  File: { // root type
+    encoding?: string | null; // String
+    filename?: string | null; // String
+    id?: string | null; // ID
+    mimetype?: string | null; // String
+    path?: string | null; // String
+  }
   Label: { // root type
     id: string; // ID!
     name: string; // String!
@@ -78,6 +86,10 @@ export interface NexusGenObjects {
     startCursor?: string | null; // String
   }
   Query: {};
+  UploadFile: { // root type
+    filename?: string | null; // String
+    uri?: string | null; // String
+  }
   User: { // root type
     iconUrl: string; // String!
     id: string; // ID!
@@ -121,6 +133,13 @@ export interface NexusGenFieldTypes {
     cursor: string; // String!
     node: NexusGenRootTypes['Challenge']; // Challenge!
   }
+  File: { // field return type
+    encoding: string | null; // String
+    filename: string | null; // String
+    id: string | null; // ID
+    mimetype: string | null; // String
+    path: string | null; // String
+  }
   Label: { // field return type
     challenges: NexusGenRootTypes['Challenge'][]; // [Challenge!]!
     id: string; // ID!
@@ -136,6 +155,7 @@ export interface NexusGenFieldTypes {
     createLabel: NexusGenRootTypes['Label']; // Label!
     createLike: NexusGenRootTypes['Like']; // Like!
     deleteLike: NexusGenRootTypes['Like']; // Like!
+    updateProfile: NexusGenRootTypes['User'] | null; // User
   }
   PageInfo: { // field return type
     endCursor: string | null; // String
@@ -151,6 +171,10 @@ export interface NexusGenFieldTypes {
     labels: NexusGenRootTypes['Label'][]; // [Label!]!
     likes: Array<NexusGenRootTypes['Like'] | null> | null; // [Like]
     user: NexusGenRootTypes['User'] | null; // User
+  }
+  UploadFile: { // field return type
+    filename: string | null; // String
+    uri: string | null; // String
   }
   User: { // field return type
     iconUrl: string; // String!
@@ -185,6 +209,13 @@ export interface NexusGenFieldTypeNames {
     cursor: 'String'
     node: 'Challenge'
   }
+  File: { // field return type name
+    encoding: 'String'
+    filename: 'String'
+    id: 'ID'
+    mimetype: 'String'
+    path: 'String'
+  }
   Label: { // field return type name
     challenges: 'Challenge'
     id: 'ID'
@@ -200,6 +231,7 @@ export interface NexusGenFieldTypeNames {
     createLabel: 'Label'
     createLike: 'Like'
     deleteLike: 'Like'
+    updateProfile: 'User'
   }
   PageInfo: { // field return type name
     endCursor: 'String'
@@ -215,6 +247,10 @@ export interface NexusGenFieldTypeNames {
     labels: 'Label'
     likes: 'Like'
     user: 'User'
+  }
+  UploadFile: { // field return type name
+    filename: 'String'
+    uri: 'String'
   }
   User: { // field return type name
     iconUrl: 'String'
@@ -242,6 +278,10 @@ export interface NexusGenArgTypes {
     }
     deleteLike: { // args
       answerId: string; // ID!
+    }
+    updateProfile: { // args
+      newIcon?: NexusGenScalars['Upload'] | null; // Upload
+      username: string; // String!
     }
   }
   Query: {

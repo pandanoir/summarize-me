@@ -43,6 +43,14 @@ type ChallengeEdge {
   node: Challenge!
 }
 
+type File {
+  encoding: String
+  filename: String
+  id: ID
+  mimetype: String
+  path: String
+}
+
 type Label {
   challenges: [Challenge!]!
   id: ID!
@@ -60,6 +68,7 @@ type Mutation {
   createLabel(challengeId: ID!, name: String!): Label!
   createLike(answerId: ID!): Like!
   deleteLike(answerId: ID!): Like!
+  updateProfile(newIcon: Upload, username: String!): User
 }
 
 """
@@ -107,6 +116,14 @@ type Query {
   labels(challengeId: ID!): [Label!]!
   likes(answerId: ID!): [Like]
   user(id: ID!): User
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+type UploadFile {
+  filename: String
+  uri: String
 }
 
 type User {

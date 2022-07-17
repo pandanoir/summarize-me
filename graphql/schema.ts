@@ -5,9 +5,10 @@ import * as Answer from './types/Answer';
 import * as Like from './types/Like';
 import * as Label from './types/Label';
 import * as User from './types/User';
+import * as Upload from './types/Upload';
 
 export const schema = makeSchema({
-  types: { ...Challenge, ...Answer, ...Like, ...Label, ...User },
+  types: { ...Challenge, ...Answer, ...Like, ...Label, ...User, ...Upload },
   outputs: {
     typegen: join(process.cwd(), 'generated', 'nexus-typegen.d.ts'),
     schema: join(process.cwd(), 'generated', 'schema.graphql'),
