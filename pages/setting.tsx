@@ -47,6 +47,7 @@ const Setting: NextPage<Props> = ({ profile }) => {
     NexusGenArgTypes['Mutation']['updateProfile']
   >(updateProfileMutation);
   const toast = useToast();
+  const [isUpdatingSetting, setIsUpdatingSetting] = useState(false);
   return (
     <ChakraProvider>
       <Head>
@@ -94,7 +95,7 @@ const Setting: NextPage<Props> = ({ profile }) => {
               colorScheme="blue"
               w="max"
               onClick={() => {
-                console.log(fileValue);
+                setIsUpdatingSetting(true);
                 updateProfile({
                   variables: { newIcon: fileValue, username: usernameValue },
                   onCompleted: () => {
@@ -102,11 +103,13 @@ const Setting: NextPage<Props> = ({ profile }) => {
                       title: '設定を更新できました',
                       position: 'bottom-right',
                     });
+                    setIsUpdatingSetting(false);
                   },
                 });
               }}
+              disabled={isUpdatingSetting}
             >
-              更新する
+              {isUpdatingSetting ? '更新中…' : '更新する'}
             </Button>
           </VStack>
         </HStack>
