@@ -4,7 +4,6 @@ import {
   Avatar,
   ChakraProvider,
   FormLabel,
-  Heading,
   HStack,
   Text,
   Input,
@@ -57,7 +56,7 @@ const Setting: NextPage<Props> = ({ profile }) => {
       <VStack p={6} as="main" spacing={12} align="left">
         <HStack align="left">
           <VStack as={FormLabel}>
-            <Avatar src={previewSrc} size="lg" />
+            <Avatar ignoreFallback src={previewSrc} size="lg" />
             <Text>変更する</Text>
             <input
               type="file"

@@ -36,7 +36,7 @@ import {
   NexusGenArgTypes,
   NexusGenFieldTypes,
 } from '../../generated/nexus-typegen';
-import { fetchData, fetchInitialData } from '../../src/utils/fetchInitialData';
+import { fetchInitialData } from '../../src/utils/fetchInitialData';
 import { getSession } from '@auth0/nextjs-auth0';
 import { Header } from '../../src/components/Header';
 
