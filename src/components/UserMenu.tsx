@@ -1,12 +1,27 @@
-import { Menu, MenuButton, Avatar, MenuList, MenuItem } from '@chakra-ui/react';
+import {
+  Menu,
+  MenuButton,
+  Avatar,
+  MenuList,
+  MenuItem,
+  MenuDivider,
+} from '@chakra-ui/react';
 import { FC } from 'react';
 
-export const UserMenu: FC<{ iconUrl: string }> = ({ iconUrl }) => (
+export const UserMenu: FC<{
+  iconUrl: string;
+  username: string;
+  id: string;
+}> = ({ iconUrl, username, id }) => (
   <Menu>
     <MenuButton>
-      <Avatar src={iconUrl} />
+      <Avatar ignoreFallback src={iconUrl} />
     </MenuButton>
     <MenuList>
+      <MenuItem as="a" href={`/user/${id}`}>
+        {username}
+      </MenuItem>
+      <MenuDivider />
       <MenuItem as="a" href="/setting">
         Setting
       </MenuItem>

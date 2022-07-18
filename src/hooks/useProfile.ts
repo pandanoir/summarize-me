@@ -7,7 +7,16 @@ import {
   NexusGenFieldTypes,
 } from '../../generated/nexus-typegen';
 
-export const useProfile = () => {
+export const UserQuery = gql`
+  query User($id: ID!) {
+    user(id: $id) {
+      iconUrl
+      username
+      id
+    }
+  }
+`;
+export const useProfile = (userId?: string) => {
   const { user, isLoading: isUserLoading, error: userError } = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [profile, setProfile] = useState<NexusGenFieldTypes['User'] | null>(
@@ -16,17 +25,19 @@ export const useProfile = () => {
   const [fetchUser] = useLazyQuery<
     { user: NexusGenFieldTypes['User'] },
     NexusGenArgTypes['Query']['user']
-  >(
-    gql`
-      query User($id: ID!) {
-        user(id: $id) {
-          iconUrl
-        }
-      }
-    `
-  );
+  >(UserQuery);
 
   useEffect(() => {
+    if (userId) {
+      setIsLoading(true);
+      fetchUser({ variables: { id: userId } }).then((data) => {
+        if (data.data) {
+          setProfile(data.data.user);
+        }
+        setIsLoading(false);
+      });
+      return;
+    }
     if (isUserLoading) {
       return;
     }
@@ -36,16 +47,18 @@ export const useProfile = () => {
     }
     setIsLoading(true);
     fetchUser({ variables: { id: user.sub } }).then((data) => {
-      console.log(data);
       if (data.data) {
         setProfile(data.data.user);
       }
       setIsLoading(false);
     });
-  }, [fetchUser, isUserLoading, user?.sub, userError]);
+  }, [fetchUser, isUserLoading, user?.sub, userError, userId]);
 
   if (profile) {
-    return { isLoading, isSignedIn: true, iconUrl: profile.iconUrl } as const;
+    return {
+      loading: isLoading,
+      ...profile,
+    } as const;
   }
-  return { isLoading, isSignedIn: false } as const;
+  return { loading: isLoading } as const;
 };
