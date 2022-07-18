@@ -58,6 +58,7 @@ export const useProfile = (userId?: string) => {
     return {
       loading: isLoading,
       ...profile,
+      isMe: user?.sub === profile.id,
     } as const;
   }
   return { loading: isLoading } as const;

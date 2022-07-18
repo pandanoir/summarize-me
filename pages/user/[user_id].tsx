@@ -4,12 +4,15 @@ import {
   Spinner,
   VStack,
   Avatar,
+  Icon,
+  Button,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { NextPage, NextPageContext } from 'next';
 import { fetchInitialData } from '../../src/utils/fetchInitialData';
 import { Header } from '../../src/components/Header';
 import { useProfile, UserQuery } from '../../src/hooks/useProfile';
+import { AiFillEdit } from 'react-icons/ai';
 
 const Challenge: NextPage = () => {
   const { query } = useRouter();
@@ -29,6 +32,15 @@ const Challenge: NextPage = () => {
             <VStack>
               <Avatar ignoreFallback src={profile.iconUrl} size="lg" />
               <Heading>{profile.username}</Heading>
+              {profile.isMe && (
+                <Button
+                  leftIcon={<Icon as={AiFillEdit} />}
+                  as="a"
+                  href="/setting"
+                >
+                  プロフィールを編集する
+                </Button>
+              )}
             </VStack>
           </VStack>
         )
