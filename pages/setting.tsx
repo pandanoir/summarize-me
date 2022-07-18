@@ -20,7 +20,7 @@ import {
   NexusGenArgTypes,
   NexusGenFieldTypes,
 } from '../generated/nexus-typegen';
-import { UserMenu } from '../src/components/UserMenu';
+import { Header } from '../src/components/Header';
 import { fetchData } from '../src/utils/fetchInitialData';
 
 const updateProfileMutation = gql`
@@ -52,12 +52,8 @@ const Setting: NextPage<Props> = ({ profile }) => {
       <Head>
         <title>summarize me</title>
       </Head>
+      <Header />
       <VStack p={6} as="main" spacing={12} align="left">
-        <HStack justify="space-between">
-          <Heading>Setting</Heading>
-          <UserMenu iconUrl={profile.iconUrl} />
-        </HStack>
-
         <HStack align="left">
           <VStack as={FormLabel}>
             <Avatar src={previewSrc} size="lg" />

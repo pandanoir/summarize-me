@@ -12,22 +12,14 @@ import {
   Icon,
   useToast,
 } from '@chakra-ui/react';
-import { gql } from 'apollo-server-micro';
-import { GetServerSideProps, NextPage } from 'next';
+import { NextPage } from 'next';
 import Head from 'next/head';
 import { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
-import {
-  NexusGenArgTypes,
-  NexusGenFieldTypes,
-} from '../../generated/nexus-typegen';
-import { UserMenu } from '../../src/components/UserMenu';
+import { Header } from '../../src/components/Header';
 import { useCreateChallenge } from '../../src/hooks/useChallenge';
-import { fetchData } from '../../src/utils/fetchInitialData';
 
-const ChallengeCreatePage: NextPage<{
-  profile: NexusGenFieldTypes['User'];
-}> = ({ profile }) => {
+const ChallengeCreatePage: NextPage = () => {
   const [titleValue, setTitleValue] = useState('');
   const [labelValue, setLabelValue] = useState('');
   const [labels, setLabels] = useState<string[]>([]);
@@ -39,11 +31,8 @@ const ChallengeCreatePage: NextPage<{
       <Head>
         <title>summarize me</title>
       </Head>
+      <Header />
       <VStack p={6} as="main" spacing={12} align="left">
-        <HStack justify="space-between">
-          <Heading>summarize me</Heading>
-          <UserMenu iconUrl={profile.iconUrl} />
-        </HStack>
         <Heading size="lg">問題を作る</Heading>
         <VStack align="left">
           <FormLabel>
@@ -114,35 +103,4 @@ const ChallengeCreatePage: NextPage<{
 };
 export default ChallengeCreatePage;
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const authResult = await withPageAuthRequired()(ctx);
-  if (!('props' in authResult)) {
-    return authResult;
-  }
-  const sub = (await authResult.props).user?.sub;
-  if (!sub) {
-    throw new Error('Unexpected error');
-  }
-  const profile = (
-    await fetchData<
-      { user: NexusGenFieldTypes['User'] },
-      NexusGenArgTypes['Query']['user']
-    >({
-      query: gql`
-        query User($id: ID!) {
-          user(id: $id) {
-            username
-            iconUrl
-          }
-        }
-      `,
-      variables: { id: sub },
-    })
-  ).user;
-  return {
-    props: {
-      ...authResult.props,
-      profile,
-    },
-  };
-};
+export const getServerSideProps = withPageAuthRequired();

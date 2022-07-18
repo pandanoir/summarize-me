@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   ChakraProvider,
-  Heading,
   HStack,
   Link,
   Text,
@@ -12,33 +11,20 @@ import {
   VStack,
   Icon,
 } from '@chakra-ui/react';
-import { gql } from 'apollo-server-micro';
 import { NextPage, NextPageContext } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { AiFillTag } from 'react-icons/ai';
 import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
-import {
-  NexusGenArgTypes,
-  NexusGenFieldTypes,
-} from '../generated/nexus-typegen';
-import { UserMenu } from '../src/components/UserMenu';
+import { Header } from '../src/components/Header';
 import {
   ChallengeChunkQuery,
   useAllChallenges,
 } from '../src/hooks/useAllChallenges';
-import { fetchData, fetchInitialData } from '../src/utils/fetchInitialData';
+import { fetchInitialData } from '../src/utils/fetchInitialData';
 
-type Props =
-  | {
-      isSignedIn: true;
-      profile: NexusGenFieldTypes['User'];
-    }
-  | {
-      isSignedIn: false;
-      profile: null;
-    };
-const Home: NextPage<Props> = ({ isSignedIn, profile }) => {
+type Props = { isSignedIn: boolean };
+const Home: NextPage<Props> = ({ isSignedIn }) => {
   const { query } = useRouter();
   const after = Array.isArray(query.after) ? query.after[0] : query.after;
   const before = Array.isArray(query.before) ? query.before[0] : query.before;
@@ -55,18 +41,8 @@ const Home: NextPage<Props> = ({ isSignedIn, profile }) => {
       <Head>
         <title>summarize me</title>
       </Head>
+      <Header />
       <VStack p={6} as="main" spacing={12} align="left">
-        <HStack justify="space-between">
-          <Heading>summarize me</Heading>
-          {isSignedIn ? (
-            <UserMenu iconUrl={profile.iconUrl} />
-          ) : (
-            <Button as="a" href="/api/auth/login">
-              Log in/Sign up
-            </Button>
-          )}
-        </HStack>
-
         <SimpleGrid gap={6} columns={{ sm: 2, lg: 3, '2xl': 4 }}>
           {challenges?.challenges.nodes?.map(({ id, title, labels }) => (
             <VStack
@@ -151,27 +127,7 @@ export const getServerSideProps = async ({
 
   const props: Props = {
     ...initialData,
-    ...(isSignedIn
-      ? {
-          isSignedIn,
-          profile: (
-            await fetchData<
-              { user: NexusGenFieldTypes['User'] },
-              NexusGenArgTypes['Query']['user']
-            >({
-              query: gql`
-                query User($id: ID!) {
-                  user(id: $id) {
-                    username
-                    iconUrl
-                  }
-                }
-              `,
-              variables: { id: session.user.sub },
-            })
-          ).user,
-        }
-      : { isSignedIn, profile: null }),
+    isSignedIn,
   };
   return {
     props,

@@ -17,8 +17,6 @@ import {
   Link,
   VStack,
   Tooltip,
-  Grid,
-  GridItem,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -40,7 +38,7 @@ import {
 } from '../../generated/nexus-typegen';
 import { fetchData, fetchInitialData } from '../../src/utils/fetchInitialData';
 import { getSession } from '@auth0/nextjs-auth0';
-import { UserMenu } from '../../src/components/UserMenu';
+import { Header } from '../../src/components/Header';
 
 const createLabelMutation = gql`
   mutation CreateLabel($name: String!, $challengeId: ID!) {
@@ -50,16 +48,8 @@ const createLabelMutation = gql`
   }
 `;
 
-type Props =
-  | {
-      isSignedIn: true;
-      profile: NexusGenFieldTypes['User'];
-    }
-  | {
-      isSignedIn: false;
-      profile: null;
-    };
-const Challenge: NextPage<Props> = ({ isSignedIn, profile }) => {
+type Props = { isSignedIn: boolean };
+const Challenge: NextPage<Props> = ({ isSignedIn }) => {
   const { query } = useRouter();
   const challengeId = Array.isArray(query.challenge_id)
     ? query.challenge_id[0]
@@ -109,86 +99,65 @@ const Challenge: NextPage<Props> = ({ isSignedIn, profile }) => {
   }
   return (
     <ChakraProvider>
+      <Header />
       <VStack p={6} as="main" spacing={3} align="left">
-        <Grid
-          templateAreas={[
-            `"heading heading button" "label label label"`,
-            `"heading label button"`,
-          ]}
-          templateColumns="max-content 1fr max-content"
-          gap="2"
-        >
-          <GridItem area="heading">
-            <Heading>{challenge.title}</Heading>
-          </GridItem>
-          <GridItem area="label" alignSelf="center">
-            <Flex wrap="wrap" gap="2" align="center">
-              {challenge.labels.map(({ name, id }) => (
-                <Link key={id} href={`/label/${name}`}>
-                  <Tag variant="outline" wordBreak="keep-all">
-                    <Icon as={AiFillTag} />
-                    {name}
-                  </Tag>
-                </Link>
-              ))}
-              {addLabelMode ? (
-                <HStack
-                  spacing="0"
-                  as="form"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    createLabel({
-                      variables: { name: newLabelValue, challengeId },
-                      refetchQueries: [ChallengeQuery],
-                      onCompleted: () => {
-                        setAddLabelMode(false);
-                      },
-                    });
-                  }}
-                >
-                  <IconButton
-                    size="xs"
-                    variant="unstyled"
-                    aria-label="remove"
-                    icon={<Icon as={FaTimes} />}
-                    onClick={() => setAddLabelMode(false)}
-                  />
-                  <Input
-                    required
-                    w="28"
-                    size="sm"
-                    rounded="md"
-                    placeholder="new label"
-                    value={newLabelValue}
-                    onChange={({ target: { value } }) =>
-                      setNewLabelValue(value)
-                    }
-                  />
-                </HStack>
-              ) : (
+        <Flex wrap="wrap" gap="2">
+          <Heading>{challenge.title}</Heading>
+          <Flex wrap="wrap" gap="2" align="center">
+            {challenge.labels.map(({ name, id }) => (
+              <Link key={id} href={`/label/${name}`}>
+                <Tag variant="outline" wordBreak="keep-all">
+                  <Icon as={AiFillTag} />
+                  {name}
+                </Tag>
+              </Link>
+            ))}
+            {addLabelMode ? (
+              <HStack
+                spacing="0"
+                as="form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  createLabel({
+                    variables: { name: newLabelValue, challengeId },
+                    refetchQueries: [ChallengeQuery],
+                    onCompleted: () => {
+                      setAddLabelMode(false);
+                    },
+                  });
+                }}
+              >
                 <IconButton
-                  size="sm"
-                  variant="outline"
-                  aria-label="add label"
-                  icon={<Icon as={BsPlus} />}
-                  onClick={() => {
-                    setAddLabelMode(true);
-                    setNewLabelValue('');
-                  }}
+                  size="xs"
+                  variant="unstyled"
+                  aria-label="remove"
+                  icon={<Icon as={FaTimes} />}
+                  onClick={() => setAddLabelMode(false)}
                 />
-              )}
-            </Flex>
-          </GridItem>
-          <GridItem area="button" w="max">
-            {isSignedIn ? (
-              <UserMenu iconUrl={profile.iconUrl} />
+                <Input
+                  required
+                  w="28"
+                  size="sm"
+                  rounded="md"
+                  placeholder="new label"
+                  value={newLabelValue}
+                  onChange={({ target: { value } }) => setNewLabelValue(value)}
+                />
+              </HStack>
             ) : (
-              <Button as="a" href="/api/auth/login">
-                Log in/Sign up
-              </Button>
+              <IconButton
+                size="sm"
+                variant="outline"
+                aria-label="add label"
+                icon={<Icon as={BsPlus} />}
+                onClick={() => {
+                  setAddLabelMode(true);
+                  setNewLabelValue('');
+                }}
+              />
             )}
-          </GridItem>
-        </Grid>
+          </Flex>
+        </Flex>
         <Tooltip
           hasArrow
           isDisabled={isSignedIn}
@@ -303,27 +272,7 @@ export const getServerSideProps = async ({
 
   const props: Props = {
     ...initialData,
-    ...(isSignedIn
-      ? {
-          isSignedIn,
-          profile: (
-            await fetchData<
-              { user: NexusGenFieldTypes['User'] },
-              NexusGenArgTypes['Query']['user']
-            >({
-              query: gql`
-                query User($id: ID!) {
-                  user(id: $id) {
-                    username
-                    iconUrl
-                  }
-                }
-              `,
-              variables: { id: session.user.sub },
-            })
-          ).user,
-        }
-      : { isSignedIn, profile: null }),
+    isSignedIn,
   };
   return {
     props,

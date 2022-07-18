@@ -34,8 +34,6 @@ export const UpdateProfileMutation = mutationField('updateProfile', {
   type: 'User',
   args: { newIcon: arg({ type: 'Upload' }), username: nonNull(stringArg()) },
   async resolve(_, { username, newIcon }, { user, prisma }) {
-    console.log('called');
-
     if (!user) throw new Error(`You need to be logged in to perform an action`);
 
     if (newIcon) {

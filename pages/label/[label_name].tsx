@@ -15,6 +15,7 @@ import { useQuery } from '@apollo/client';
 import { NexusGenFieldTypes } from '../../generated/nexus-typegen';
 import { useRouter } from 'next/router';
 import { AiFillTag } from 'react-icons/ai';
+import { Header } from '../../src/components/Header';
 
 type ServerProps = {
   label: {
@@ -43,41 +44,42 @@ const Label = ({ label }: ServerProps) => {
     variables: { name: router.query.label_name },
   });
 
-  if (!label) {
-    return <p>not found</p>;
-  }
-  if (loading) {
-    return <Spinner />;
-  }
   return (
     <ChakraProvider>
-      <Box p={6} as="main">
-        <HStack>
-          <Heading>
-            <Icon as={AiFillTag} />
-            {label.name}
-          </Heading>
-        </HStack>
+      <Header />
+      {!label ? (
+        <p>not found</p>
+      ) : loading ? (
+        <Spinner />
+      ) : (
+        <Box p={6} as="main">
+          <HStack>
+            <Heading>
+              <Icon as={AiFillTag} />
+              {label.name}
+            </Heading>
+          </HStack>
 
-        <SimpleGrid gap={6} columns={{ sm: 2, lg: 3, '2xl': 4 }} py={12}>
-          {data?.label.challenges.map(({ id, title }) => (
-            <VStack
-              key={id}
-              borderWidth={1}
-              borderRadius="lg"
-              p={3}
-              align="left"
-            >
-              <Box>
-                {title}
-                <Button as="a" href={`/challenge/${id}`}>
-                  挑戦する
-                </Button>
-              </Box>
-            </VStack>
-          ))}
-        </SimpleGrid>
-      </Box>
+          <SimpleGrid gap={6} columns={{ sm: 2, lg: 3, '2xl': 4 }} py={12}>
+            {data?.label.challenges.map(({ id, title }) => (
+              <VStack
+                key={id}
+                borderWidth={1}
+                borderRadius="lg"
+                p={3}
+                align="left"
+              >
+                <Box>
+                  {title}
+                  <Button as="a" href={`/challenge/${id}`}>
+                    挑戦する
+                  </Button>
+                </Box>
+              </VStack>
+            ))}
+          </SimpleGrid>
+        </Box>
+      )}{' '}
     </ChakraProvider>
   );
 };

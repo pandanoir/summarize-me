@@ -9,10 +9,12 @@ import {
   Box,
 } from '@chakra-ui/react';
 import { FC } from 'react';
+import { Header } from '../src/components/Header';
 
-const Challenge:FC = () => {
+const Challenge: FC = () => {
   return (
     <ChakraProvider>
+      <Header />
       <VStack p={6} as="main" spacing={12} align="stretch">
         <VStack spacing={4} align="stretch">
           <Heading>チュートリアル</Heading>
