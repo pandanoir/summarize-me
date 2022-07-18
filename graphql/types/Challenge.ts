@@ -17,12 +17,17 @@ export const Challenge = objectType({
     t.nonNull.string('authorId');
     t.nonNull.field('author', {
       type: nonNull('User'),
-      resolve(parent, _args, ctx) {
-        return ctx.prisma.challenge
+      async resolve(parent, _args, ctx) {
+        const author = await ctx.prisma.challenge
           .findUnique({
             where: { id: parent.id },
+            rejectOnNotFound: true,
           })
           .author();
+        if (!author) {
+          throw new Error('Author is not found');
+        }
+        return author;
       },
     });
     t.nonNull.list.field('labels', {
