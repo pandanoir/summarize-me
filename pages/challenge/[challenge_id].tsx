@@ -103,6 +103,12 @@ const Challenge: NextPage<Props> = ({ isSignedIn }) => {
       <VStack p={6} as="main" spacing={3} align="left">
         <Flex wrap="wrap" gap="2">
           <Heading>{challenge.title}</Heading>
+          <Text alignSelf="end">
+            created by{' '}
+            <Link color="blue.400" href={`/user/${challenge.author?.id}`}>
+              {challenge.author?.username}
+            </Link>
+          </Text>
           <Flex wrap="wrap" gap="2" align="center">
             {challenge.labels.map(({ name, id }) => (
               <Link key={id} href={`/label/${name}`}>

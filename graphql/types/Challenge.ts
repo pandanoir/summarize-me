@@ -15,6 +15,16 @@ export const Challenge = objectType({
     t.nonNull.id('id');
     t.nonNull.string('title');
     t.nonNull.string('authorId');
+    t.nonNull.field('author', {
+      type: nonNull('User'),
+      resolve(parent, _args, ctx) {
+        return ctx.prisma.challenge
+          .findUnique({
+            where: { id: parent.id },
+          })
+          .author();
+      },
+    });
     t.nonNull.list.field('labels', {
       type: nonNull('Label'),
       resolve(parent, _args, ctx) {
@@ -91,7 +101,7 @@ export const ChallengeQuery = queryField('challenge', {
   resolve(_parent, { id }, ctx) {
     return ctx.prisma.challenge.findFirst({
       where: { id },
-      include: { answers: true },
+      include: { answers: true, author: true },
     });
   },
 });

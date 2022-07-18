@@ -13,6 +13,7 @@ type Answer {
 
 type Challenge {
   answers: [Answer!]!
+  author: User!
   authorId: String!
   id: ID!
   labels: [Label!]!

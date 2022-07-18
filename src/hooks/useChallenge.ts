@@ -10,6 +10,10 @@ export const ChallengeQuery = gql`
     challenge(id: $id) {
       id
       title
+      author {
+        username
+        id
+      }
       labels {
         id
         name
@@ -57,6 +61,8 @@ export const useChallenge = (id: string) => {
     {
       challenge: NexusGenFieldTypes['Query']['challenge'] & {
         labels: NexusGenFieldTypes['Query']['labels'];
+      } & {
+        author: NexusGenFieldTypes['Query']['user'];
       };
     },
     NexusGenArgTypes['Query']['challenge']

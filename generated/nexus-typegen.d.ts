@@ -118,6 +118,7 @@ export interface NexusGenFieldTypes {
   }
   Challenge: { // field return type
     answers: NexusGenRootTypes['Answer'][]; // [Answer!]!
+    author: NexusGenRootTypes['User']; // User!
     authorId: string; // String!
     id: string; // ID!
     labels: NexusGenRootTypes['Label'][]; // [Label!]!
@@ -194,6 +195,7 @@ export interface NexusGenFieldTypeNames {
   }
   Challenge: { // field return type name
     answers: 'Answer'
+    author: 'User'
     authorId: 'String'
     id: 'ID'
     labels: 'Label'
